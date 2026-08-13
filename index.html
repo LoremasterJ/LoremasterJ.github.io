@@ -47,19 +47,12 @@
       <p class="subtitle">SPECIALIZING IN GAME MECHANICS & DESIGN</p>
     </section>
 
-    <!-- Projects Grid Preview -->
+    <!-- Projects Section -->
     <section class="projects-section">
-      <div class="section-title">CORE_PROJECTS</div>
-      <div class="projects-grid">
-        <div class="project-card">
-          <span class="proj-id">01_PROJECT_ALPHA</span>
-          <span class="proj-desc">(C# // UNITY)</span>
-        </div>
-        <div class="project-card">
-          <span class="proj-id">02_LEVEL_DESIGN</span>
-          <span class="proj-desc">(GREYBOX // UNREAL)</span>
-        </div>
-      </div>
+      <div class="section-title">CORE_PROJECTS // DESIGN_ARCHIVES</div>
+      
+      <!-- Dynamic Project Cards Will Render Here -->
+      <div class="projects-grid" id="projectsGrid"></div>
     </section>
 
     <!-- Footer Barcode & Tags -->
@@ -76,6 +69,115 @@
     </footer>
 
   </main>
+
+  <!-- INDUSTRIAL POPUP MODAL -->
+  <div class="modal-overlay" id="projectModal" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="corner-bracket top-left"></div>
+      <div class="corner-bracket top-right"></div>
+      <div class="corner-bracket bottom-left"></div>
+      <div class="corner-bracket bottom-right"></div>
+      
+      <div class="modal-header">
+        <span id="modalId" class="tech-tag">// FILE_PREVIEW</span>
+        <button class="close-btn" onclick="closeModalDirect()">[X]</button>
+      </div>
+
+      <div class="modal-body">
+        <h2 id="modalTitle">PROJECT TITLE</h2>
+        <p id="modalCategory" class="modal-category">ENGINE // ROLE</p>
+        
+        <div class="modal-preview-box">
+          <span class="viewport-label">DOCUMENT_SUMMARY</span>
+          <p id="modalDesc">Project description and file notes go here...</p>
+        </div>
+
+        <div class="file-action-container">
+          <a id="modalFileLink" href="#" target="_blank" class="download-btn">
+            <span class="btn-icon">⬇</span> ACCESS_DESIGN_DOCUMENT [.PDF]
+          </a>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span class="tech-tag">SECURITY_LEVEL: PUBLIC</span>
+        <span class="tech-tag">STATUS: VERIFIED</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT: EASY PROJECT DATA MANAGEMENT -->
+  <script>
+    // =========================================================================
+    // ADD NEW PROJECTS HERE!
+    // To add a new project, just copy a block below, paste it, and update it.
+    // =========================================================================
+    const projectsData = [
+      {
+        id: "DATA_LOG_01",
+        title: "MECHANIC DESIGN DOC",
+        category: "SYSTEMS DESIGN // GDD",
+        shortDesc: "Comprehensive spec document for player locomotion and grid interaction mechanics.",
+        fileUrl: "sample-gdd.pdf" // Put the PDF or image file path here
+      },
+      {
+        id: "DATA_LOG_02",
+        title: "GREYBOX LEVEL LAYOUT",
+        category: "LEVEL DESIGN // BLOCKOUT",
+        shortDesc: "Pacing notes, sightline maps, and objective flow analysis for encounter arena.",
+        fileUrl: "level-layout-notes.pdf"
+      }
+    ];
+
+    // AUTOMATIC CARD RENDERER
+    function renderProjects() {
+      const grid = document.getElementById('projectsGrid');
+      grid.innerHTML = '';
+
+      projectsData.forEach((project, index) => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.onclick = () => openModal(index);
+
+        card.innerHTML = `
+          <div class="proj-header">
+            <span class="proj-id">${project.id}</span>
+            <span class="proj-indicator">[VIEW]</span>
+          </div>
+          <div class="proj-title">${project.title}</div>
+          <div class="proj-desc">${project.category}</div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // MODAL CONTROL FUNCTIONS
+    function openModal(index) {
+      const project = projectsData[index];
+      document.getElementById('modalId').innerText = `// FILE_PREVIEW :: ${project.id}`;
+      document.getElementById('modalTitle').innerText = project.title;
+      document.getElementById('modalCategory').innerText = project.category;
+      document.getElementById('modalDesc').innerText = project.shortDesc;
+      document.getElementById('modalFileLink').href = project.fileUrl;
+
+      const modal = document.getElementById('projectModal');
+      modal.classList.add('active');
+    }
+
+    function closeModalDirect() {
+      document.getElementById('projectModal').classList.remove('active');
+    }
+
+    function closeModal(event) {
+      if (event.target.id === 'projectModal') {
+        closeModalDirect();
+      }
+    }
+
+    // Initial Render
+    renderProjects();
+  </script>
 
 </body>
 </html>
