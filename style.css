@@ -160,14 +160,14 @@ body {
   color: var(--text-muted);
 }
 
-/* DATA STREAM TEXT CONSOLE */
+/* DATA STREAM TEXT CONSOLE (CLEANED UP SCROLLBAR) */
 .stream-console {
-  height: 65px;
+  height: 55px;
   background: #000;
   border: 1px solid #1a1a1a;
   padding: 6px;
-  margin: 8px 0;
-  overflow-y: auto;
+  margin: 6px 0;
+  overflow-y: hidden;
   font-size: 9px;
   color: #888;
   display: flex;
@@ -185,19 +185,24 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* TERMINAL IMAGE CONTAINER (EXPANDED FOR VERTICAL COVERS) */
 .terminal-image-container {
   position: relative;
-  height: 120px;
+  height: 180px;
   border: 1px solid var(--border-color);
-  background: #000;
+  background: #000000;
   overflow: hidden;
   margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .terminal-image-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #000000;
 }
 
 .hud-scanning-line {
@@ -216,7 +221,7 @@ body {
   0% { top: 0; opacity: 0; }
   15% { opacity: 1; }
   85% { opacity: 1; }
-  100% { top: 120px; opacity: 0; }
+  100% { top: 180px; opacity: 0; }
 }
 
 /* DEV INFO */
