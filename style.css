@@ -4,7 +4,6 @@
   --text-main: #ffffff;
   --text-muted: #7a7e85;
   --border-color: #2a2d34;
-  --accent-color: #ffffff;
   --hover-border: #666666;
 }
 
@@ -222,120 +221,97 @@ body {
   color: var(--text-muted);
 }
 
-/* --- INDUSTRIAL POPUP MODAL --- */
-.modal-overlay {
+/* --- FLOATING HUD PREVIEW TOOLTIP --- */
+.hud-preview {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(4px);
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease-in-out;
-}
-
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal-card {
-  position: relative;
+  width: 240px;
   background: #000000;
-  border: 1px solid var(--border-color);
-  width: 90%;
-  max-width: 550px;
-  padding: 25px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
-  transform: translateY(15px) scale(0.97);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--text-muted);
+  padding: 10px;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  scale: 0.9;
+  transition: opacity 0.15s ease, scale 0.15s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
 }
 
-.modal-overlay.active .modal-card {
-  transform: translateY(0) scale(1);
+.hud-preview.active {
+  opacity: 1;
+  scale: 1;
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 10px;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.close-btn:hover {
-  color: #fff;
-}
-
-.modal-body h2 {
-  font-size: 18px;
-  margin-bottom: 4px;
-}
-
-.modal-category {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 15px;
-}
-
-.modal-preview-box {
+.hud-image-box {
+  width: 100%;
+  height: 140px;
   background: #080808;
   border: 1px solid var(--border-color);
-  padding: 15px;
-  margin-bottom: 20px;
+  overflow: hidden;
+  position: relative;
 }
 
-.modal-preview-box p {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #ccc;
-  margin-top: 8px;
+.hud-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.05);
 }
 
-.file-action-container {
-  margin-bottom: 15px;
+/* ANIMATED HUD SCAN LINE */
+.hud-scanning-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  animation: scan 2s linear infinite;
+  z-index: 2;
 }
 
-.download-btn {
-  display: block;
-  text-align: center;
-  background: #ffffff;
-  color: #000000;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 11px;
-  padding: 12px;
-  letter-spacing: 1px;
-  transition: background 0.2s;
+@keyframes scan {
+  0% { top: 10px; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 170px; opacity: 0; }
 }
 
-.download-btn:hover {
-  background: #cccccc;
+/* ROTATING HUD SYMBOL */
+.hud-ring {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border: 1px dashed var(--text-main);
+  border-radius: 50%;
+  animation: spin 6s linear infinite;
 }
 
-.modal-footer {
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.hud-crosshair {
+  position: absolute;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.hud-crosshair.top { top: -8px; left: 50%; transform: translateX(-50%); }
+.hud-crosshair.bottom { bottom: -8px; left: 50%; transform: translateX(-50%); }
+
+.hud-footer {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  margin-top: 8px;
+  font-size: 8px;
   color: var(--text-muted);
-  border-top: 1px solid var(--border-color);
-  padding-top: 10px;
+  letter-spacing: 0.5px;
+}
+
+.hud-status {
+  color: #ffffff;
 }
