@@ -224,8 +224,8 @@ body {
 /* --- FLOATING HUD PREVIEW TOOLTIP --- */
 .hud-preview {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: -9999px; /* Keeps hidden off-screen until active */
+  left: -9999px;
   width: 240px;
   background: #000000;
   border: 1px solid var(--text-muted);
@@ -233,13 +233,15 @@ body {
   pointer-events: none;
   z-index: 1000;
   opacity: 0;
+  visibility: hidden;
   scale: 0.9;
-  transition: opacity 0.15s ease, scale 0.15s ease;
+  transition: opacity 0.15s ease, scale 0.15s ease, visibility 0.15s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
 }
 
 .hud-preview.active {
   opacity: 1;
+  visibility: visible;
   scale: 1;
 }
 
