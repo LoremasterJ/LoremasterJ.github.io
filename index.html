@@ -98,7 +98,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT: EASY PROJECT DATA MANAGEMENT & CURSOR HUD -->
+<!-- SCRIPT: EASY PROJECT DATA MANAGEMENT & CURSOR HUD -->
   <script>
     // =========================================================================
     // ADD NEW PROJECTS HERE!
@@ -154,17 +154,21 @@
       });
     }
 
-    // CURSOR TRACKING LOGIC
+    // CURSOR TRACKING LOGIC (ATTACHED TO UPPER RIGHT OF MOUSE)
     document.addEventListener('mousemove', (e) => {
-      // Offset HUD slightly right and down from cursor so it doesn't block the mouse
-      const x = e.clientX + 20;
-      const y = e.clientY + 20;
+      // Anchored to upper-right corner:
+      // Offset +15px to the right of cursor
+      // Offset -210px upward so the box sits ABOVE the cursor
+      const x = e.clientX + 15;
+      const y = e.clientY - 210;
 
-      // Ensure HUD doesn't run off the right side of screen
-      const maxX = window.innerWidth - 280;
-      const finalX = x > maxX ? e.clientX - 260 : x;
+      // Screen boundary checks to keep it on screen near edges
+      const maxX = window.innerWidth - 260;
+      const finalX = x > maxX ? e.clientX - 250 : x;
+      const finalY = y < 10 ? e.clientY + 20 : y;
 
-      hud.style.transform = `translate3d(${finalX}px, ${y}px, 0)`;
+      hud.style.left = `${finalX}px`;
+      hud.style.top = `${finalY}px`;
     });
 
     function showHud(project) {
