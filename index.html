@@ -26,19 +26,57 @@
       <span class="tech-tag">LOREMASTERJ_DEV_B1</span>
     </div>
 
-    <!-- Main Hero Box -->
-    <section class="hero-viewport">
-      <div class="corner-bracket top-left"></div>
-      <div class="corner-bracket top-right"></div>
-      <div class="corner-bracket bottom-left"></div>
-      <div class="corner-bracket bottom-right"></div>
+    <!-- MAIN HERO & TERMINAL WORKSTATION CONTAINER -->
+    <section class="workstation-wrapper">
       
-      <div class="viewport-content">
-        <span class="viewport-label">HERO CANVAS // WIREFRAME VIEW</span>
-        <div class="placeholder-graphic">
-          <p>[ GAMEPLAY / ENGINE DEMO CANVAS ]</p>
+      <!-- Primary Hero Box -->
+      <div class="hero-viewport">
+        <div class="corner-bracket top-left"></div>
+        <div class="corner-bracket top-right"></div>
+        <div class="corner-bracket bottom-left"></div>
+        <div class="corner-bracket bottom-right"></div>
+        
+        <div class="viewport-content">
+          <span class="viewport-label">HERO CANVAS // WIREFRAME VIEW</span>
+          <div class="placeholder-graphic">
+            <p>[ GAMEPLAY / ENGINE DEMO CANVAS ]</p>
+          </div>
         </div>
       </div>
+
+      <!-- Laser Connector Line -->
+      <div class="terminal-connector-line" id="connectorLine"></div>
+
+      <!-- Expanding Side Terminal Window -->
+      <div class="side-terminal" id="sideTerminal">
+        <div class="corner-bracket top-left"></div>
+        <div class="corner-bracket top-right"></div>
+        <div class="corner-bracket bottom-left"></div>
+        <div class="corner-bracket bottom-right"></div>
+
+        <div class="terminal-header">
+          <span id="termId" class="tech-tag">// TERMINAL_FEED: STANDBY</span>
+          <span class="tech-tag">[STREAM_LIVE]</span>
+        </div>
+
+        <!-- Scrolling Data Stream Console -->
+        <div class="stream-console" id="streamConsole">
+          <div class="stream-line">> INITIALIZING DATA LINK...</div>
+          <div class="stream-line">> ACCESSING LOCAL ARCHIVES...</div>
+        </div>
+
+        <!-- Image Preview Frame -->
+        <div class="terminal-image-container">
+          <div class="hud-scanning-line"></div>
+          <img id="terminalImg" src="" alt="GDD Preview">
+        </div>
+
+        <div class="terminal-footer">
+          <span class="tech-tag">ENCRYPTION: NONE</span>
+          <span class="tech-tag">STATUS: 200 OK</span>
+        </div>
+      </div>
+
     </section>
 
     <!-- Bio / Info -->
@@ -70,62 +108,45 @@
 
   </main>
 
-  <!-- FLOATING HUD MOUSE-PREVIEW CONTAINER -->
-  <div class="hud-preview" id="hudPreview">
-    <!-- Corner brackets -->
-    <div class="corner-bracket top-left"></div>
-    <div class="corner-bracket top-right"></div>
-    <div class="corner-bracket bottom-left"></div>
-    <div class="corner-bracket bottom-right"></div>
-
-    <!-- Animated Reticle / Ring -->
-    <div class="hud-ring"></div>
-    
-    <!-- Floating Symbols / Hairlines -->
-    <span class="hud-crosshair top">+</span>
-    <span class="hud-crosshair bottom">+</span>
-    <div class="hud-scanning-line"></div>
-
-    <!-- Image Canvas -->
-    <div class="hud-image-box">
-      <img id="hudImg" src="" alt="Project Preview">
-    </div>
-
-    <!-- HUD Label -->
-    <div class="hud-footer">
-      <span id="hudTag" class="hud-tag">// SCANNING_FILE...</span>
-      <span class="hud-status">[LIVE_PREVIEW]</span>
-    </div>
-  </div>
-
-<!-- SCRIPT: EASY PROJECT DATA MANAGEMENT & CURSOR HUD -->
+  <!-- SCRIPT: DATA STREAM & EXPANDING TERMINAL LOGIC -->
   <script>
-    // =========================================================================
-    // ADD NEW PROJECTS HERE!
-    // Set 'imageUrl' to your GDD cover image file or screenshot!
-    // =========================================================================
     const projectsData = [
       {
         id: "DATA_LOG_01",
         title: "MECHANIC DESIGN DOC",
         category: "SYSTEMS DESIGN // GDD",
-        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=GDD+COVER+01", // Replace with your image file path
-        fileUrl: "sample-gdd.pdf"
+        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=GDD+COVER+01",
+        fileUrl: "sample-gdd.pdf",
+        streamLogs: [
+          "> ACCESSING FILE: DATA_LOG_01.GDD",
+          "> BUFFERING SYSTEM MECHANICS...",
+          "> VERIFYING LOCOMOTION SPECS...",
+          "> RENDERING COVER PREVIEW..."
+        ]
       },
       {
         id: "DATA_LOG_02",
         title: "GREYBOX LEVEL LAYOUT",
         category: "LEVEL DESIGN // BLOCKOUT",
-        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=LEVEL+BLOCKOUT", // Replace with your image file path
-        fileUrl: "level-layout-notes.pdf"
+        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=LEVEL+BLOCKOUT",
+        fileUrl: "level-layout-notes.pdf",
+        streamLogs: [
+          "> ACCESSING FILE: DATA_LOG_02.MAP",
+          "> LOADING GREYBOX GEOMETRY...",
+          "> CHECKING SIGHTLINES & PACING...",
+          "> RENDERING LEVEL MAP..."
+        ]
       }
     ];
 
-    const hud = document.getElementById('hudPreview');
-    const hudImg = document.getElementById('hudImg');
-    const hudTag = document.getElementById('hudTag');
+    const terminal = document.getElementById('sideTerminal');
+    const connector = document.getElementById('connectorLine');
+    const terminalImg = document.getElementById('terminalImg');
+    const termId = document.getElementById('termId');
+    const consoleBox = document.getElementById('streamConsole');
 
-    // AUTOMATIC CARD RENDERER
+    let streamInterval;
+
     function renderProjects() {
       const grid = document.getElementById('projectsGrid');
       grid.innerHTML = '';
@@ -134,12 +155,9 @@
         const card = document.createElement('div');
         card.className = 'project-card';
         
-        // Open file on click
         card.onclick = () => window.open(project.fileUrl, '_blank');
-
-        // Mouse hover handlers for HUD
-        card.onmouseenter = () => showHud(project);
-        card.onmouseleave = hideHud;
+        card.onmouseenter = () => openTerminal(project);
+        card.onmouseleave = closeTerminal;
 
         card.innerHTML = `
           <div class="proj-header">
@@ -154,34 +172,39 @@
       });
     }
 
-    // CURSOR TRACKING LOGIC (ATTACHED TO UPPER RIGHT OF MOUSE)
-    document.addEventListener('mousemove', (e) => {
-      // Anchored to upper-right corner:
-      // Offset +15px to the right of cursor
-      // Offset -210px upward so the box sits ABOVE the cursor
-      const x = e.clientX + 15;
-      const y = e.clientY - 210;
+    function openTerminal(project) {
+      termId.innerText = `// STREAM: ${project.id}`;
+      terminalImg.src = project.imageUrl;
 
-      // Screen boundary checks to keep it on screen near edges
-      const maxX = window.innerWidth - 260;
-      const finalX = x > maxX ? e.clientX - 250 : x;
-      const finalY = y < 10 ? e.clientY + 20 : y;
+      // Reset and trigger terminal expansion
+      connector.classList.add('active');
+      terminal.classList.add('active');
 
-      hud.style.left = `${finalX}px`;
-      hud.style.top = `${finalY}px`;
-    });
+      // Start Data Stream Text Animation
+      clearInterval(streamInterval);
+      consoleBox.innerHTML = '';
+      let logIndex = 0;
 
-    function showHud(project) {
-      hudImg.src = project.imageUrl;
-      hudTag.innerText = `// FILE: ${project.id}`;
-      hud.classList.add('active');
+      streamInterval = setInterval(() => {
+        if (logIndex < project.streamLogs.length) {
+          const line = document.createElement('div');
+          line.className = 'stream-line';
+          line.innerText = project.streamLogs[logIndex];
+          consoleBox.appendChild(line);
+          consoleBox.scrollTop = consoleBox.scrollHeight;
+          logIndex++;
+        } else {
+          clearInterval(streamInterval);
+        }
+      }, 120); // Speed of line prints
     }
 
-    function hideHud() {
-      hud.classList.remove('active');
+    function closeTerminal() {
+      connector.classList.remove('active');
+      terminal.classList.remove('active');
+      clearInterval(streamInterval);
     }
 
-    // Initial Render
     renderProjects();
   </script>
 
