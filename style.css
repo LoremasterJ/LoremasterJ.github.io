@@ -54,7 +54,7 @@ body {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 850px;
+  max-width: 900px;
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   padding: 30px;
@@ -71,13 +71,22 @@ body {
   margin-bottom: 25px;
 }
 
-/* HERO VIEWPORT WITH CORNER BRACKETS */
+/* WORKSTATION DUAL-PANE WRAPPER */
+.workstation-wrapper {
+  display: flex;
+  position: relative;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 30px;
+}
+
 .hero-viewport {
   position: relative;
   border: 1px solid var(--border-color);
   background-color: #050505;
   padding: 20px;
-  margin-bottom: 30px;
+  flex: 1;
+  min-height: 260px;
 }
 
 .corner-bracket {
@@ -99,7 +108,7 @@ body {
 }
 
 .placeholder-graphic {
-  height: 220px;
+  height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -107,6 +116,107 @@ body {
   margin-top: 10px;
   color: var(--text-muted);
   font-size: 12px;
+}
+
+/* EXPANDING CONNECTOR LINE */
+.terminal-connector-line {
+  width: 0;
+  height: 2px;
+  background: #ffffff;
+  align-self: center;
+  transition: width 0.2s ease-out;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.terminal-connector-line.active {
+  width: 20px;
+}
+
+/* EXPANDING SIDE TERMINAL WINDOW */
+.side-terminal {
+  position: relative;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  background-color: #050505;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, border-color 0.3s ease;
+}
+
+.side-terminal.active {
+  width: 280px;
+  opacity: 1;
+  border-color: var(--border-color);
+  padding: 12px;
+}
+
+.terminal-header, .terminal-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* DATA STREAM TEXT CONSOLE */
+.stream-console {
+  height: 65px;
+  background: #000;
+  border: 1px solid #1a1a1a;
+  padding: 6px;
+  margin: 8px 0;
+  overflow-y: auto;
+  font-size: 9px;
+  color: #888;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stream-line {
+  color: #ffffff;
+  animation: fadeIn 0.15s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.terminal-image-container {
+  position: relative;
+  height: 120px;
+  border: 1px solid var(--border-color);
+  background: #000;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.terminal-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hud-scanning-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  animation: scan 2s linear infinite;
+  z-index: 2;
+}
+
+@keyframes scan {
+  0% { top: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 120px; opacity: 0; }
 }
 
 /* DEV INFO */
@@ -219,101 +329,4 @@ body {
   padding: 3px 6px;
   font-size: 9px;
   color: var(--text-muted);
-}
-
-/* --- FLOATING HUD PREVIEW TOOLTIP --- */
-.hud-preview {
-  position: fixed;
-  top: -9999px; /* Keeps hidden off-screen until active */
-  left: -9999px;
-  width: 240px;
-  background: #000000;
-  border: 1px solid var(--text-muted);
-  padding: 10px;
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  scale: 0.9;
-  transition: opacity 0.15s ease, scale 0.15s ease, visibility 0.15s ease;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-}
-
-.hud-preview.active {
-  opacity: 1;
-  visibility: visible;
-  scale: 1;
-}
-
-.hud-image-box {
-  width: 100%;
-  height: 140px;
-  background: #080808;
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  position: relative;
-}
-
-.hud-image-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: contrast(1.05);
-}
-
-/* ANIMATED HUD SCAN LINE */
-.hud-scanning-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-  animation: scan 2s linear infinite;
-  z-index: 2;
-}
-
-@keyframes scan {
-  0% { top: 10px; opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { top: 170px; opacity: 0; }
-}
-
-/* ROTATING HUD SYMBOL */
-.hud-ring {
-  position: absolute;
-  top: -12px;
-  right: -12px;
-  width: 24px;
-  height: 24px;
-  border: 1px dashed var(--text-main);
-  border-radius: 50%;
-  animation: spin 6s linear infinite;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-
-.hud-crosshair {
-  position: absolute;
-  font-size: 10px;
-  color: var(--text-muted);
-}
-.hud-crosshair.top { top: -8px; left: 50%; transform: translateX(-50%); }
-.hud-crosshair.bottom { bottom: -8px; left: 50%; transform: translateX(-50%); }
-
-.hud-footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: 8px;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-}
-
-.hud-status {
-  color: #ffffff;
 }
