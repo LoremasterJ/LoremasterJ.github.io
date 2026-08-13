@@ -51,7 +51,7 @@
     <section class="projects-section">
       <div class="section-title">CORE_PROJECTS // DESIGN_ARCHIVES</div>
       
-      <!-- Dynamic Project Cards Will Render Here -->
+      <!-- Dynamic Project Cards -->
       <div class="projects-grid" id="projectsGrid"></div>
     </section>
 
@@ -70,79 +70,81 @@
 
   </main>
 
-  <!-- INDUSTRIAL POPUP MODAL -->
-  <div class="modal-overlay" id="projectModal" onclick="closeModal(event)">
-    <div class="modal-card">
-      <div class="corner-bracket top-left"></div>
-      <div class="corner-bracket top-right"></div>
-      <div class="corner-bracket bottom-left"></div>
-      <div class="corner-bracket bottom-right"></div>
-      
-      <div class="modal-header">
-        <span id="modalId" class="tech-tag">// FILE_PREVIEW</span>
-        <button class="close-btn" onclick="closeModalDirect()">[X]</button>
-      </div>
+  <!-- FLOATING HUD MOUSE-PREVIEW CONTAINER -->
+  <div class="hud-preview" id="hudPreview">
+    <!-- Corner brackets -->
+    <div class="corner-bracket top-left"></div>
+    <div class="corner-bracket top-right"></div>
+    <div class="corner-bracket bottom-left"></div>
+    <div class="corner-bracket bottom-right"></div>
 
-      <div class="modal-body">
-        <h2 id="modalTitle">PROJECT TITLE</h2>
-        <p id="modalCategory" class="modal-category">ENGINE // ROLE</p>
-        
-        <div class="modal-preview-box">
-          <span class="viewport-label">DOCUMENT_SUMMARY</span>
-          <p id="modalDesc">Project description and file notes go here...</p>
-        </div>
+    <!-- Animated Reticle / Ring -->
+    <div class="hud-ring"></div>
+    
+    <!-- Floating Symbols / Hairlines -->
+    <span class="hud-crosshair top">+</span>
+    <span class="hud-crosshair bottom">+</span>
+    <div class="hud-scanning-line"></div>
 
-        <div class="file-action-container">
-          <a id="modalFileLink" href="#" target="_blank" class="download-btn">
-            <span class="btn-icon">⬇</span> ACCESS_DESIGN_DOCUMENT [.PDF]
-          </a>
-        </div>
-      </div>
+    <!-- Image Canvas -->
+    <div class="hud-image-box">
+      <img id="hudImg" src="" alt="Project Preview">
+    </div>
 
-      <div class="modal-footer">
-        <span class="tech-tag">SECURITY_LEVEL: PUBLIC</span>
-        <span class="tech-tag">STATUS: VERIFIED</span>
-      </div>
+    <!-- HUD Label -->
+    <div class="hud-footer">
+      <span id="hudTag" class="hud-tag">// SCANNING_FILE...</span>
+      <span class="hud-status">[LIVE_PREVIEW]</span>
     </div>
   </div>
 
-  <!-- SCRIPT: EASY PROJECT DATA MANAGEMENT -->
+  <!-- SCRIPT: EASY PROJECT DATA MANAGEMENT & CURSOR HUD -->
   <script>
     // =========================================================================
     // ADD NEW PROJECTS HERE!
-    // To add a new project, just copy a block below, paste it, and update it.
+    // Set 'imageUrl' to your GDD cover image file or screenshot!
     // =========================================================================
     const projectsData = [
       {
         id: "DATA_LOG_01",
         title: "MECHANIC DESIGN DOC",
         category: "SYSTEMS DESIGN // GDD",
-        shortDesc: "Comprehensive spec document for player locomotion and grid interaction mechanics.",
-        fileUrl: "sample-gdd.pdf" // Put the PDF or image file path here
+        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=GDD+COVER+01", // Replace with your image file path
+        fileUrl: "sample-gdd.pdf"
       },
       {
         id: "DATA_LOG_02",
         title: "GREYBOX LEVEL LAYOUT",
         category: "LEVEL DESIGN // BLOCKOUT",
-        shortDesc: "Pacing notes, sightline maps, and objective flow analysis for encounter arena.",
+        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=LEVEL+BLOCKOUT", // Replace with your image file path
         fileUrl: "level-layout-notes.pdf"
       }
     ];
+
+    const hud = document.getElementById('hudPreview');
+    const hudImg = document.getElementById('hudImg');
+    const hudTag = document.getElementById('hudTag');
 
     // AUTOMATIC CARD RENDERER
     function renderProjects() {
       const grid = document.getElementById('projectsGrid');
       grid.innerHTML = '';
 
-      projectsData.forEach((project, index) => {
+      projectsData.forEach((project) => {
         const card = document.createElement('div');
         card.className = 'project-card';
-        card.onclick = () => openModal(index);
+        
+        // Open file on click
+        card.onclick = () => window.open(project.fileUrl, '_blank');
+
+        // Mouse hover handlers for HUD
+        card.onmouseenter = () => showHud(project);
+        card.onmouseleave = hideHud;
 
         card.innerHTML = `
           <div class="proj-header">
             <span class="proj-id">${project.id}</span>
-            <span class="proj-indicator">[VIEW]</span>
+            <span class="proj-indicator">[OPEN_DOC]</span>
           </div>
           <div class="proj-title">${project.title}</div>
           <div class="proj-desc">${project.category}</div>
@@ -152,27 +154,27 @@
       });
     }
 
-    // MODAL CONTROL FUNCTIONS
-    function openModal(index) {
-      const project = projectsData[index];
-      document.getElementById('modalId').innerText = `// FILE_PREVIEW :: ${project.id}`;
-      document.getElementById('modalTitle').innerText = project.title;
-      document.getElementById('modalCategory').innerText = project.category;
-      document.getElementById('modalDesc').innerText = project.shortDesc;
-      document.getElementById('modalFileLink').href = project.fileUrl;
+    // CURSOR TRACKING LOGIC
+    document.addEventListener('mousemove', (e) => {
+      // Offset HUD slightly right and down from cursor so it doesn't block the mouse
+      const x = e.clientX + 20;
+      const y = e.clientY + 20;
 
-      const modal = document.getElementById('projectModal');
-      modal.classList.add('active');
+      // Ensure HUD doesn't run off the right side of screen
+      const maxX = window.innerWidth - 280;
+      const finalX = x > maxX ? e.clientX - 260 : x;
+
+      hud.style.transform = `translate3d(${finalX}px, ${y}px, 0)`;
+    });
+
+    function showHud(project) {
+      hudImg.src = project.imageUrl;
+      hudTag.innerText = `// FILE: ${project.id}`;
+      hud.classList.add('active');
     }
 
-    function closeModalDirect() {
-      document.getElementById('projectModal').classList.remove('active');
-    }
-
-    function closeModal(event) {
-      if (event.target.id === 'projectModal') {
-        closeModalDirect();
-      }
+    function hideHud() {
+      hud.classList.remove('active');
     }
 
     // Initial Render
