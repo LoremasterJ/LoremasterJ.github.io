@@ -4,33 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LOREMASTERJ // GAME DEV PORTFOLIO</title>
-  <!-- Google Font for Tactical Monospace Style -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
-  <!-- Version bumped to ?v=3 to force cache reload -->
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
-  <!-- Angled Evangelion Hex Grid Background -->
   <div class="bg-perspective-container">
     <div class="hex-grid-bg"></div>
   </div>
 
-  <!-- Tactical UI Card Container -->
   <main class="portfolio-card">
     
-    <!-- Top Bar metadata -->
     <div class="card-header">
       <span class="tech-tag">// SYS_STATUS: OPTIMAL</span>
       <span class="tech-tag">LOREMASTERJ_DEV_B1</span>
     </div>
 
-    <!-- MAIN HERO & TERMINAL WORKSTATION CONTAINER -->
     <section class="workstation-wrapper">
       
-      <!-- Primary Hero Box -->
       <div class="hero-viewport">
         <div class="corner-bracket top-left"></div>
         <div class="corner-bracket top-right"></div>
@@ -45,10 +38,8 @@
         </div>
       </div>
 
-      <!-- Laser Connector Line -->
       <div class="terminal-connector-line" id="connectorLine"></div>
 
-      <!-- Expanding Side Terminal Window -->
       <div class="side-terminal" id="sideTerminal">
         <div class="corner-bracket top-left"></div>
         <div class="corner-bracket top-right"></div>
@@ -60,15 +51,16 @@
           <span class="tech-tag">[STREAM_LIVE]</span>
         </div>
 
-        <!-- Scrolling Data Stream Console -->
         <div class="stream-console" id="streamConsole">
           <div class="stream-line">> INITIALIZING DATA LINK...</div>
           <div class="stream-line">> ACCESSING LOCAL ARCHIVES...</div>
         </div>
 
-        <!-- Image Preview Frame -->
         <div class="terminal-image-container">
-          <div class="hud-scanning-line"></div>
+          <svg class="hud-oscilloscope" viewBox="0 0 500 60" preserveAspectRatio="none">
+            <path class="wave-glow" d="M 0,30 Q 25,5 50,30 T 100,30 T 150,30 T 200,30 T 250,30 T 300,30 T 350,30 T 400,30 T 450,30 T 500,30" />
+            <path class="wave-line" d="M 0,30 Q 25,5 50,30 T 100,30 T 150,30 T 200,30 T 250,30 T 300,30 T 350,30 T 400,30 T 450,30 T 500,30" />
+          </svg>
           <img id="terminalImg" src="" alt="GDD Preview">
         </div>
 
@@ -80,21 +72,17 @@
 
     </section>
 
-    <!-- Bio / Info -->
     <section class="dev-info">
       <h1>LOREMASTERJ <span class="accent">//</span> GAME DEVELOPER</h1>
       <p class="subtitle">SPECIALIZING IN GAME MECHANICS & DESIGN</p>
     </section>
 
-    <!-- Projects Section -->
     <section class="projects-section">
       <div class="section-title">CORE_PROJECTS // DESIGN_ARCHIVES</div>
       
-      <!-- Dynamic Project Cards -->
       <div class="projects-grid" id="projectsGrid"></div>
     </section>
 
-    <!-- Footer Barcode & Tags -->
     <footer class="card-footer">
       <div class="barcode">
         <div class="barcode-lines"></div>
@@ -109,7 +97,6 @@
 
   </main>
 
-  <!-- SCRIPT: DATA STREAM & EXPANDING TERMINAL LOGIC -->
   <script>
     const projectsData = [
       {
@@ -143,7 +130,7 @@
         title: "LEXISIZE // VOCABULARY ENGINE",
         category: "WEB APPLICATION // PSYCHOMETRIC SYSTEMS",
         imageUrl: "lexisize_preview.png",
-        fileUrl: "vocab-app/index.html", // Update this relative path or URL as needed
+        fileUrl: "vocab-app/index.html",
         streamLogs: [
           "> INITIALIZING STATISTICAL ENGINE...",
           "> LOADING 50K LEMMA CORPUS BANDS...",
