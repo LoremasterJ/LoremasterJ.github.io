@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOREMASTERJ // GAME DEV PORTFOLIO</title>
+  <!-- Google Font for Tactical Monospace Style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <!-- Version bumped to ?v=3 to force cache reload -->
+  <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+
+  <!-- Angled Evangelion Hex Grid Background -->
+  <div class="bg-perspective-container">
+    <div class="hex-grid-bg"></div>
+  </div>
+
+  <!-- Tactical UI Card Container -->
+  <main class="portfolio-card">
+    
+    <!-- Top Bar metadata -->
+    <div class="card-header">
+      <span class="tech-tag">// SYS_STATUS: OPTIMAL</span>
+      <span class="tech-tag">LOREMASTERJ_DEV_B1</span>
+    </div>
+
+    <!-- MAIN HERO & TERMINAL WORKSTATION CONTAINER -->
+    <section class="workstation-wrapper">
+      
+      <!-- Primary Hero Box -->
+      <div class="hero-viewport">
+        <div class="corner-bracket top-left"></div>
+        <div class="corner-bracket top-right"></div>
+        <div class="corner-bracket bottom-left"></div>
+        <div class="corner-bracket bottom-right"></div>
+        
+        <div class="viewport-content">
+          <span class="viewport-label">HERO CANVAS // WIREFRAME VIEW</span>
+          <div class="placeholder-graphic">
+            <p>[ GAMEPLAY / ENGINE DEMO CANVAS ]</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Laser Connector Line -->
+      <div class="terminal-connector-line" id="connectorLine"></div>
+
+      <!-- Expanding Side Terminal Window -->
+      <div class="side-terminal" id="sideTerminal">
+        <div class="corner-bracket top-left"></div>
+        <div class="corner-bracket top-right"></div>
+        <div class="corner-bracket bottom-left"></div>
+        <div class="corner-bracket bottom-right"></div>
+
+        <div class="terminal-header">
+          <span id="termId" class="tech-tag">// TERMINAL_FEED: STANDBY</span>
+          <span class="tech-tag">[STREAM_LIVE]</span>
+        </div>
+
+        <!-- Scrolling Data Stream Console -->
+        <div class="stream-console" id="streamConsole">
+          <div class="stream-line">> INITIALIZING DATA LINK...</div>
+          <div class="stream-line">> ACCESSING LOCAL ARCHIVES...</div>
+        </div>
+
+        <!-- Image Preview Frame -->
+        <div class="terminal-image-container">
+          <div class="hud-scanning-line"></div>
+          <img id="terminalImg" src="" alt="GDD Preview">
+        </div>
+
+        <div class="terminal-footer">
+          <span class="tech-tag">ENCRYPTION: NONE</span>
+          <span class="tech-tag">STATUS: 200 OK</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Bio / Info -->
+    <section class="dev-info">
+      <h1>LOREMASTERJ <span class="accent">//</span> GAME DEVELOPER</h1>
+      <p class="subtitle">SPECIALIZING IN GAME MECHANICS & DESIGN</p>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects-section">
+      <div class="section-title">CORE_PROJECTS // DESIGN_ARCHIVES</div>
+      
+      <!-- Dynamic Project Cards -->
+      <div class="projects-grid" id="projectsGrid"></div>
+    </section>
+
+    <!-- Footer Barcode & Tags -->
+    <footer class="card-footer">
+      <div class="barcode">
+        <div class="barcode-lines"></div>
+        <span class="barcode-num">332 253 668 4885</span>
+      </div>
+      <div class="footer-tags">
+        <span class="badge">END_DEV_01</span>
+        <span class="badge">IPX3</span>
+        <span class="badge">SPEC_81</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- SCRIPT: DATA STREAM & EXPANDING TERMINAL LOGIC -->
+  <script>
+    const projectsData = [
+      {
+        id: "DATA_LOG_01",
+        title: "ESTLEBRAD: CRIMSON DAWN DESIGN DOCS",
+        category: "CONCEPT AND SYSTEMS DESIGN // GDD",
+        imageUrl: "gdd_vamp_cover.png",
+        fileUrl: "gdd_vamp_cover.png",
+        streamLogs: [
+          "> ACCESSING FILE: DATA_LOG_01.GDD",
+          "> BUFFERING SYSTEM MECHANICS...",
+          "> VERIFYING LOCOMOTION SPECS...",
+          "> RENDERING COVER PREVIEW..."
+        ]
+      },
+      {
+        id: "DATA_LOG_02",
+        title: "GREYBOX LEVEL LAYOUT",
+        category: "LEVEL DESIGN // BLOCKOUT",
+        imageUrl: "https://via.placeholder.com/300x200/111111/FFFFFF?text=LEVEL+BLOCKOUT",
+        fileUrl: "level-layout-notes.pdf",
+        streamLogs: [
+          "> ACCESSING FILE: DATA_LOG_02.MAP",
+          "> LOADING GREYBOX GEOMETRY...",
+          "> CHECKING SIGHTLINES & PACING...",
+          "> RENDERING LEVEL MAP..."
+        ]
+      },
+      {
+        id: "DATA_LOG_03",
+        title: "LEXISIZE // VOCABULARY ENGINE",
+        category: "WEB APPLICATION // PSYCHOMETRIC SYSTEMS",
+        imageUrl: "https://via.placeholder.com/300x200/111111/38bdf8?text=LEXICAL+ENGINE",
+        fileUrl: "vocab-app/index.html", // Update this relative path or URL as needed
+        streamLogs: [
+          "> INITIALIZING STATISTICAL ENGINE...",
+          "> LOADING 50K LEMMA CORPUS BANDS...",
+          "> CONNECTING FIREBASE REALTIME DB...",
+          "> COMPILING STRATIFIED QUIZ UI..."
+        ]
+      }
+    ];
+
+    const terminal = document.getElementById('sideTerminal');
+    const connector = document.getElementById('connectorLine');
+    const terminalImg = document.getElementById('terminalImg');
+    const termId = document.getElementById('termId');
+    const consoleBox = document.getElementById('streamConsole');
+
+    let streamInterval;
+
+    function renderProjects() {
+      const grid = document.getElementById('projectsGrid');
+      grid.innerHTML = '';
+
+      projectsData.forEach((project) => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        
+        card.onclick = () => window.open(project.fileUrl, '_blank');
+        card.onmouseenter = () => openTerminal(project);
+        card.onmouseleave = closeTerminal;
+
+        card.innerHTML = `
+          <div class="proj-header">
+            <span class="proj-id">${project.id}</span>
+            <span class="proj-indicator">[LAUNCH_APP]</span>
+          </div>
+          <div class="proj-title">${project.title}</div>
+          <div class="proj-desc">${project.category}</div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openTerminal(project) {
+      termId.innerText = `// STREAM: ${project.id}`;
+      terminalImg.src = project.imageUrl;
+
+      connector.classList.add('active');
+      terminal.classList.add('active');
+
+      clearInterval(streamInterval);
+      consoleBox.innerHTML = '';
+      let logIndex = 0;
+
+      streamInterval = setInterval(() => {
+        if (logIndex < project.streamLogs.length) {
+          const line = document.createElement('div');
+          line.className = 'stream-line';
+          line.innerText = project.streamLogs[logIndex];
+          consoleBox.appendChild(line);
+          consoleBox.scrollTop = consoleBox.scrollHeight;
+          logIndex++;
+        } else {
+          clearInterval(streamInterval);
+        }
+      }, 120);
+    }
+
+    function closeTerminal() {
+      connector.classList.remove('active');
+      terminal.classList.remove('active');
+      clearInterval(streamInterval);
+    }
+
+    renderProjects();
+  </script>
+
+</body>
+</html>
