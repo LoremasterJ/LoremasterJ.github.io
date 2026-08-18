@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>English Vocabulary Estimator & Leaderboard</title>
   
-  <!-- Firebase SDKs (Compat version for direct CDN usage) -->
+  <!-- Firebase SDKs (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
@@ -20,12 +20,13 @@
       --primary: #38bdf8;
       --primary-hover: #0ea5e9;
       --accent: #34d399;
+      --danger: #f87171;
       --gold: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1.5rem; }
-    .container { max-width: 720px; width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+    .container { max-width: 760px; width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.4); margin: auto; }
 
     .meta-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
     .tier-badge { background: rgba(56, 189, 248, 0.12); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -65,7 +66,7 @@
     .bar-track { background: #0d1524; height: 7px; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
     .bar-inner { height: 100%; background: var(--primary); width: 0%; border-radius: 4px; transition: width 0.8s ease; }
 
-    /* Name Submission & Leaderboard */
+    /* Name Submission & Scoreboard */
     .save-section {
       background: #0d1524; border: 1px solid var(--border); border-radius: 12px;
       padding: 1.25rem; margin: 1.5rem 0; display: flex; gap: 0.75rem;
@@ -77,14 +78,29 @@
     .name-input:focus { border-color: var(--primary); }
     .btn-save { width: auto; padding: 0 1.5rem; white-space: nowrap; }
 
-    .leaderboard-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-    .leaderboard-list { background: #0d1524; border: 1px solid var(--border); border-radius: 12px; max-height: 240px; overflow-y: auto; text-align: left; }
-    .lb-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .section-headline { font-size: 1.15rem; font-weight: 700; margin: 2rem 0 0.85rem; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+    
+    /* Leaderboard UI */
+    .leaderboard-list { background: #0d1524; border: 1px solid var(--border); border-radius: 12px; max-height: 280px; overflow-y: auto; text-align: left; }
+    .lb-row { display: grid; grid-template-columns: 36px 1fr auto auto; gap: 0.75rem; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .lb-row:last-child { border-bottom: none; }
-    .lb-rank { font-weight: 700; width: 28px; color: var(--muted); }
+    .lb-rank { font-weight: 700; color: var(--muted); }
     .lb-rank.top-1 { color: var(--gold); }
-    .lb-name { flex: 1; font-weight: 600; }
-    .lb-score { color: var(--accent); font-weight: 700; }
+    .lb-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; background: rgba(56, 189, 248, 0.1); color: var(--primary); font-weight: 600; white-space: nowrap; }
+    .lb-score { color: var(--accent); font-weight: 700; text-align: right; }
+
+    /* Review / Missed Words Section */
+    .missed-list { background: #0d1524; border: 1px solid var(--border); border-radius: 12px; max-height: 320px; overflow-y: auto; text-align: left; padding: 0.5rem; }
+    .missed-card { background: #111a2c; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .missed-card:last-child { margin-bottom: 0; }
+    .missed-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+    .missed-word { font-size: 1.15rem; font-weight: 700; color: #fff; }
+    .missed-tier { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .answer-line { margin-top: 0.35rem; line-height: 1.4; }
+    .answer-line.wrong { color: var(--danger); }
+    .answer-line.correct { color: var(--accent); font-weight: 600; }
+    .perfect-banner { background: rgba(52, 211, 153, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 1.25rem; border-radius: 8px; text-align: center; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -100,14 +116,14 @@
       <div class="progress-bar-fill" id="progress-bar"></div>
     </div>
 
-    <div class="word-title" id="word-target">hesitate</div>
+    <div class="word-title" id="word-target">ponder</div>
     <div class="word-meta" id="word-type">verb</div>
 
     <div class="options-grid" id="options-container"></div>
     <button class="btn-action" id="next-btn" disabled onclick="handleNext()">Next Word</button>
   </div>
 
-  <!-- Results & Leaderboard Interface -->
+  <!-- Results, Review & Leaderboard Interface -->
   <div id="result-screen" class="result-view" style="display: none;">
     <p class="result-header">Estimated English Vocabulary Size</p>
     <div class="score-total" id="final-vocab-count">0</div>
@@ -117,25 +133,31 @@
 
     <!-- Name Entry Form -->
     <div class="save-section" id="submit-box">
-      <input type="text" id="player-name" class="name-input" placeholder="Enter your name for the leaderboard" maxlength="24" />
+      <input type="text" id="player-name" class="name-input" placeholder="Enter your name for the scoreboard" maxlength="20" />
       <button class="btn-action btn-save" onclick="saveScore()">Post Score</button>
     </div>
 
+    <!-- Review Missed Words Section -->
+    <div class="section-headline">
+      <span>Performance Review</span>
+      <span id="missed-count-tag" style="font-size: 0.8rem; color: var(--muted); font-weight: normal;"></span>
+    </div>
+    <div class="missed-list" id="missed-container"></div>
+
     <!-- Live Leaderboard -->
-    <div class="leaderboard-title">
+    <div class="section-headline">
       <span>Community Leaderboard</span>
-      <span style="font-size: 0.8rem; color: var(--muted); font-weight: normal;">Top Wordmasters</span>
+      <span style="font-size: 0.8rem; color: var(--muted); font-weight: normal;">Ranked by Vocabulary Size</span>
     </div>
     <div class="leaderboard-list" id="leaderboard-container">
-      <div class="lb-row" style="color: var(--muted);">Loading high scores...</div>
+      <div class="lb-row" style="color: var(--muted); grid-template-columns: 1fr;">Loading scoreboard...</div>
     </div>
 
-    <button class="btn-action" style="margin-top: 1.5rem; background: var(--border); color: #fff;" onclick="restartTest()">Retake Assessment</button>
+    <button class="btn-action" style="margin-top: 2rem; background: var(--border); color: #fff;" onclick="restartTest()">Retake Assessment</button>
   </div>
 </div>
 
 <script>
-  // Firebase Configuration & Initialization
   const firebaseConfig = {
     apiKey: "AIzaSyAMV8VSZfnaaqWlnQt0sLG4zHShnF3-TAA",
     authDomain: "vocab-tester-d7649.firebaseapp.com",
@@ -161,53 +183,342 @@
   };
 
   const QUESTION_BANK = [
-    // --- 10 BEGINNER ---
-    { word: "hesitate", pos: "verb", tier: "beginner", correct: 1, options: ["To pause briefly due to physical exhaustion", "To pause briefly before saying or doing something", "To pause briefly to observe distant scenery", "To pause briefly during formal speech delivery"] },
-    { word: "glance", pos: "verb", tier: "beginner", correct: 0, options: ["To look quickly and briefly at something", "To look intensely and steadily at something", "To look secretively through an opening", "To look angrily at an opposing person"] },
-    { word: "reluctant", pos: "adjective", tier: "beginner", correct: 2, options: ["Feeling anxious about future uncertainty", "Feeling indifferent to outside advice", "Feeling hesitant and unwilling to act", "Feeling unable to make logical sense"] },
-    { word: "abundant", pos: "adjective", tier: "beginner", correct: 3, options: ["Existing in small, concentrated amounts", "Existing in rare, prized distributions", "Existing in dense, unorganized clumps", "Existing in large, plentiful quantities"] },
-    { word: "fragile", pos: "adjective", tier: "beginner", correct: 0, options: ["Easily broken, damaged, or harmed", "Easily bent without losing shape", "Easily dissolved in cold liquids", "Easily hidden from plain view"] },
-    { word: "hostile", pos: "adjective", tier: "beginner", correct: 1, options: ["Showing cold, detached disinterest", "Showing open, aggressive unfriendliness", "Showing excessive, frantic nervousness", "Showing stubborn, quiet disagreement"] },
-    { word: "thrive", pos: "verb", tier: "beginner", correct: 2, options: ["To survive through harsh deprivation", "To adapt slowly to surrounding climate", "To grow vigorously and develop successfully", "To spread rapidly across foreign terrain"] },
-    { word: "conceal", pos: "verb", tier: "beginner", correct: 1, options: ["To protect something from direct damage", "To keep something hidden from sight", "To transport something under cover", "To hold something in secure storage"] },
-    { word: "dread", pos: "noun", tier: "beginner", correct: 3, options: ["A sharp feeling of sudden irritation", "A lingering sense of deep sorrow", "A dull feeling of quiet confusion", "A great fear of future misfortune"] },
-    { word: "seldom", pos: "adverb", tier: "beginner", correct: 0, options: ["Almost never; on rare occasions", "At fixed, predictable intervals", "Without prior notice or warning", "Only when strictly necessary"] },
+    // ==========================================
+    // TIER 1: BEGINNER (10 Questions)
+    // ==========================================
+    {
+      word: "ponder", pos: "verb", tier: "beginner", correct: 2,
+      options: [
+        "To decide quickly under urgent pressure",
+        "To speak softly to avoid interruption",
+        "To think about something carefully and deeply",
+        "To organize facts into numerical order"
+      ]
+    },
+    {
+      word: "scarce", pos: "adjective", tier: "beginner", correct: 0,
+      options: [
+        "Insufficient for demand; rare and in short supply",
+        "Scattered unevenly over a large geographic territory",
+        "Diminished in quality due to prolonged physical wear",
+        "Confined strictly within established safety bounds"
+      ]
+    },
+    {
+      word: "linger", pos: "verb", tier: "beginner", correct: 3,
+      options: [
+        "To wander aimlessly through unfamiliar paths",
+        "To hesitate repeatedly during conversation",
+        "To move forward with measured steps",
+        "To stay in a place longer than necessary"
+      ]
+    },
+    {
+      word: "vivid", pos: "adjective", tier: "beginner", correct: 1,
+      options: [
+        "Expressed with rapid and forceful rhythm",
+        "Producing powerful, clear images in the mind",
+        "Displayed with elaborate and costly decoration",
+        "Changing continuously throughout the day"
+      ]
+    },
+    {
+      word: "hinder", pos: "verb", tier: "beginner", correct: 2,
+      options: [
+        "To reject a formal proposal entirely",
+        "To criticize someone's creative effort",
+        "To create difficulties resulting in delay or obstruction",
+        "To misinterpret the purpose of an assigned task"
+      ]
+    },
+    {
+      word: "somber", pos: "adjective", tier: "beginner", correct: 0,
+      options: [
+        "Oppressively solemn, grave, or gloomy in mood",
+        "Visibly fatigued after prolonged physical exertion",
+        "Excessively formal during informal social occasions",
+        "Cautiously quiet when approaching potential danger"
+      ]
+    },
+    {
+      word: "perceive", pos: "verb", tier: "beginner", correct: 1,
+      options: [
+        "To analyze data using mathematical models",
+        "To become aware or conscious of something through the senses",
+        "To convey ideas through written composition",
+        "To remember events that took place long ago"
+      ]
+    },
+    {
+      word: "blunt", pos: "adjective", tier: "beginner", correct: 3,
+      options: [
+        "Easily shattered under sudden heavy impact",
+        "Expressed in overly complex technical terms",
+        "Polite and indirect in addressing conflict",
+        "Uncompromisingly direct and forthright in speech"
+      ]
+    },
+    {
+      word: "remedy", pos: "noun", tier: "beginner", correct: 2,
+      options: [
+        "A formal inquiry into structural defects",
+        "A temporary reduction in ongoing expenses",
+        "A medicine or treatment for a disease or injury",
+        "A legal argument presented before a magistrate"
+      ]
+    },
+    {
+      word: "tedious", pos: "adjective", tier: "beginner", correct: 0,
+      options: [
+        "Too long, slow, or dull; tiresome or monotonous",
+        "Physically dangerous to carry out alone",
+        "Requiring advanced mathematical calculation",
+        "Composed of delicate and fragile materials"
+      ]
+    },
 
-    // --- 10 INTERMEDIATE ---
-    { word: "mitigate", pos: "verb", tier: "intermediate", correct: 1, options: ["To prevent a bad event from happening entirely", "To make a bad situation less severe or serious", "To postpone a bad consequence until a later date", "To identify the underlying cause of a bad result"] },
-    { word: "pragmatic", pos: "adjective", tier: "intermediate", correct: 3, options: ["Guided primarily by theoretical doctrine", "Guided primarily by emotional conviction", "Guided primarily by historical precedent", "Guided primarily by practical considerations"] },
-    { word: "scrutinize", pos: "verb", tier: "intermediate", correct: 0, options: ["To examine or inspect very closely and thoroughly", "To critique or evaluate from an artistic perspective", "To summarize or condense for quick reading", "To verify or cross-check against an index"] },
-    { word: "ubiquitous", pos: "adjective", tier: "intermediate", correct: 2, options: ["Present only in specialized technical contexts", "Present in increasing quantities over time", "Present, appearing, or found everywhere", "Present without drawing conscious notice"] },
-    { word: "tenuous", pos: "adjective", tier: "intermediate", correct: 1, options: ["Showing temporary hesitation in action", "Very weak, slight, or unsubstantial", "Flexible under strong tensile pressure", "Lacking clear visual distinctness"] },
-    { word: "candid", pos: "adjective", tier: "intermediate", correct: 0, options: ["Truthful and straightforward; frank", "Polite and agreeable; diplomatic", "Spontaneous and disorganized; casual", "Brief and concise; to the point"] },
-    { word: "augment", pos: "verb", tier: "intermediate", correct: 3, options: ["To replace an element with a better alternative", "To refine an existing product for market sale", "To accelerate the completion of a project", "To make something greater by adding to it"] },
-    { word: "complacent", pos: "adjective", tier: "intermediate", correct: 2, options: ["Overly eager to satisfy the demands of others", "Unwilling to acknowledge alternative viewpoints", "Self-satisfied and uncritical of one's shortcomings", "Resigned to unfavorable circumstances without protest"] },
-    { word: "lucid", pos: "adjective", tier: "intermediate", correct: 1, options: ["Brightly illuminated by an external light source", "Expressed clearly; easy to understand", "Composed with artistic and refined elegance", "Free from any emotional bias or personal favor"] },
-    { word: "reiterate", pos: "verb", tier: "intermediate", correct: 0, options: ["To state something again for emphasis or clarity", "To explain something using simpler terminology", "To defend an assertion against critical scrutiny", "To summarize the key points of an ongoing debate"] },
+    // ==========================================
+    // TIER 2: INTERMEDIATE (10 Questions)
+    // ==========================================
+    {
+      word: "coerce", pos: "verb", tier: "intermediate", correct: 1,
+      options: [
+        "To convince someone through rational debate",
+        "To persuade someone to act by using force or threats",
+        "To encourage someone by offering financial awards",
+        "To trick someone through deliberate omission of facts"
+      ]
+    },
+    {
+      word: "frugal", pos: "adjective", tier: "intermediate", correct: 3,
+      options: [
+        "Reluctant to share personal belongings with others",
+        "Unwilling to invest in innovative technology",
+        "Driven strictly by immediate emotional gratification",
+        "Economical with regard to money or food; sparing"
+      ]
+    },
+    {
+      word: "advocate", pos: "verb", tier: "intermediate", correct: 0,
+      options: [
+        "To publicly recommend or support a particular cause",
+        "To objectively audit an organization's records",
+        "To mediate disputes between competing factions",
+        "To publish a critical review of a policy"
+      ]
+    },
+    {
+      word: "resilient", pos: "adjective", tier: "intermediate", correct: 2,
+      options: [
+        "Incapable of sustaining any physical deformation",
+        "Prone to bending without breaking permanently",
+        "Able to recover quickly from difficulties or setbacks",
+        "Unresponsive to outside emotional stimulation"
+      ]
+    },
+    {
+      word: "diverge", pos: "verb", tier: "intermediate", correct: 1,
+      options: [
+        "To gather together toward a central point",
+        "To separate from another route and go in a different direction",
+        "To stop progressing along an established timeline",
+        "To expand outward equally in all dimensions"
+      ]
+    },
+    {
+      word: "subtle", pos: "adjective", tier: "intermediate", correct: 0,
+      options: [
+        "So delicate or precise as to be difficult to analyze",
+        "Completely hidden from any scientific measurement",
+        "Expressed through complex mathematical notation",
+        "Deliberately misleading to obscure true motives"
+      ]
+    },
+    {
+      word: "repudiate", pos: "verb", tier: "intermediate", correct: 3,
+      options: [
+        "To critique a document for minor grammatical errors",
+        "To postpone an official proceeding indefinitely",
+        "To amend a contract to include updated stipulations",
+        "To refuse to accept or be associated with something"
+      ]
+    },
+    {
+      word: "pristine", pos: "adjective", tier: "intermediate", correct: 2,
+      options: [
+        "Preserved inside a secure museum vault",
+        "Constructed using highly modern engineering methods",
+        "In its original condition; unspoiled or clean",
+        "Refined through repeated industrial processing"
+      ]
+    },
+    {
+      word: "reconcile", pos: "verb", tier: "intermediate", correct: 0,
+      options: [
+        "To restore friendly relations between parties",
+        "To document discrepancies found in accounts",
+        "To debate policy before a legislative panel",
+        "To cancel opposing orders to prevent conflict"
+      ]
+    },
+    {
+      word: "ambiguous", pos: "adjective", tier: "intermediate", correct: 1,
+      options: [
+        "Grammatically incorrect in formal writing",
+        "Open to more than one interpretation; unclear",
+        "Completely devoid of factual corroboration",
+        "Intended solely to cause comedic confusion"
+      ]
+    },
 
-    // --- 10 ADVANCED ---
-    { word: "ephemeral", pos: "adjective", tier: "advanced", correct: 2, options: ["Physically fragile and prone to crumbling", "Visually faint and difficult to perceive", "Lasting for a very short period of time", "Existing only in subjective imagination"] },
-    { word: "obfuscate", pos: "verb", tier: "advanced", correct: 1, options: ["To fabricate facts to mislead an audience", "To make something obscure, unclear, or unintelligible", "To omit critical context to simplify a summary", "To delay delivering an official public statement"] },
-    { word: "sycophant", pos: "noun", tier: "advanced", correct: 0, options: ["A person who acts obsequiously to gain advantage", "A person who attacks cherished traditional beliefs", "A person who displays arrogant intellectual pride", "A person who deceives others for monetary profit"] },
-    { word: "pernicious", pos: "adjective", tier: "advanced", correct: 3, options: ["Having an overtly violent and explosive impact", "Having an unpredictable and erratic trajectory", "Having a sudden and disastrous consequence", "Having a harmful effect, especially in a gradual way"] },
-    { word: "recalcitrant", pos: "adjective", tier: "advanced", correct: 1, options: ["Reluctant to participate due to lack of skill", "Obstinately uncooperative toward authority", "Prone to sudden changes of mood or intention", "Unwilling to communicate with unfamiliar peers"] },
-    { word: "alacrity", pos: "noun", tier: "advanced", correct: 0, options: ["Brisk and cheerful readiness to act", "Calm and unshakable self-confidence", "Quiet and respectful deference to rank", "Sharp and clever mental wit in speech"] },
-    { word: "laconic", pos: "adjective", tier: "advanced", correct: 2, options: ["Speaking in a harsh and aggressive manner", "Speaking with excessive formality and jargon", "Using very few words; concise to the point of seeming rude", "Using melodic and rhythmically pleasing sentence cadences"] },
-    { word: "fastidious", pos: "adjective", tier: "advanced", correct: 3, options: ["Excessively anxious about upcoming deadlines", "Deeply suspicious of unverified statements", "Reluctant to delegate work to colleagues", "Very attentive to and concerned about accuracy and detail"] },
-    { word: "ineffable", pos: "adjective", tier: "advanced", correct: 1, options: ["Impossible to measure with standard instruments", "Too great or extreme to be expressed in words", "Beyond the reach of normal human cognition", "Incapable of being changed or reversed by law"] },
-    { word: "equanimity", pos: "noun", tier: "advanced", correct: 0, options: ["Mental calmness and composure, especially in a difficult situation", "Moral integrity and unwavering adherence to ethical principles", "Impartial fairness and equality in resolving judicial disputes", "Modest humility and avoidance of claiming personal credit"] },
+    // ==========================================
+    // TIER 3: ADVANCED (10 Questions)
+    // ==========================================
+    {
+      word: "surreptitious", pos: "adjective", tier: "advanced", correct: 3,
+      options: [
+        "Marked by swift, continuous physical movement",
+        "Operating with complete disregard for civilian law",
+        "Displaying exceptional agility in athletic competition",
+        "Kept secret, especially because it would not be approved of"
+      ]
+    },
+    {
+      word: "exacerbate", pos: "verb", tier: "advanced", correct: 1,
+      options: [
+        "To eliminate the root symptoms of a disorder",
+        "To make a problem, bad situation, or negative feeling worse",
+        "To delay resolution through bureaucratic procedures",
+        "To misdiagnose the underlying cause of an affliction"
+      ]
+    },
+    {
+      word: "anachronistic", pos: "adjective", tier: "advanced", correct: 0,
+      options: [
+        "Belonging to a period other than that in which it exists",
+        "Arranged in strict chronological sequence of events",
+        "Recorded in ancient, untranslated scripts",
+        "Destined to become obsolete in the near future"
+      ]
+    },
+    {
+      word: "capricious", pos: "adjective", tier: "advanced", correct: 2,
+      options: [
+        "Steadfast and unchanging in moral dedication",
+        "Excessively fearful of sudden environmental change",
+        "Given to sudden and unaccountable changes of mood or behavior",
+        "Deliberately contrary solely for argumentative pleasure"
+      ]
+    },
+    {
+      word: "proclivity", pos: "noun", tier: "advanced", correct: 1,
+      options: [
+        "A formal decree issued by a high magistrate",
+        "A tendency to choose or do something regularly; an inclination",
+        "A sudden revulsion toward a previously favored hobby",
+        "An inherited talent for memorizing complex narratives"
+      ]
+    },
+    {
+      word: "trenchant", pos: "adjective", tier: "advanced", correct: 0,
+      options: [
+        "Vigorous or incisive in expression or style",
+        "Monotonous and repetitive in public delivery",
+        "Subtle and elusive in conveying meaning",
+        "Overly cautious when addressing sensitive topics"
+      ]
+    },
+    {
+      word: "taciturn", pos: "adjective", tier: "advanced", correct: 3,
+      options: [
+        "Prone to making aggressive rhetorical claims",
+        "Articulate and persuasive in diplomatic circles",
+        "Hesitant when asked to present before a crowd",
+        "Reserved or uncommunicative in speech; saying little"
+      ]
+    },
+    {
+      word: "vicissitude", pos: "noun", tier: "advanced", correct: 2,
+      options: [
+        "A persistent moral corruption within institutions",
+        "A permanent alteration of geological landscape",
+        "A change of circumstances or fortune, typically unwelcome",
+        "An enduring devotion to an artistic discipline"
+      ]
+    },
+    {
+      word: "quandary", pos: "noun", tier: "advanced", correct: 0,
+      options: [
+        "A state of perplexity or uncertainty over what to do in a difficult situation",
+        "A heated confrontation regarding contested territorial boundaries",
+        "A prolonged delay caused by contradictory administrative codes",
+        "A complete failure to anticipate catastrophic economic loss"
+      ]
+    },
+    {
+      word: "sagacious", pos: "adjective", tier: "advanced", correct: 1,
+      options: [
+        "Possessing encyclopedic knowledge of ancient myth",
+        "Having or showing keen mental discernment and good judgment",
+        "Maintaining rigid adherence to established doctrine",
+        "Demonstrating remarkable physical dexterity under pressure"
+      ]
+    },
 
-    // --- 5 GRANDMASTER ---
-    { word: "perspicacity", pos: "noun", tier: "grandmaster", correct: 1, options: ["The ability to articulate concepts with fluid eloquence", "The quality of having keen mental discernment and insight", "The capacity to retain extensive factual information", "The tendency to maintain resolute focus under distress"] },
-    { word: "sesquipedalian", pos: "adjective", tier: "grandmaster", correct: 3, options: ["Characterized by antique grammatical structures", "Characterized by excessively ornate rhetorical style", "Characterized by slow and ponderous delivery", "Characterized by the use of long words"] },
-    { word: "pulchritude", pos: "noun", tier: "grandmaster", correct: 0, options: ["Physical beauty and aesthetic appeal", "Moral righteousness and virtuous conduct", "Stately grandeur and commanding presence", "Deep wisdom gained through lived experience"] },
-    { word: "tenebrous", pos: "adjective", tier: "grandmaster", correct: 2, options: ["Physically brittle due to extreme dehydration", "Conceptually complex and difficult to analyze", "Dark, shadowy, or obscure in character", "Vulnerable to sudden corruption or decay"] },
-    { word: "defenestration", pos: "noun", tier: "grandmaster", correct: 1, options: ["The act of formally stripping an official of their title", "The act of throwing someone or something out of a window", "The act of abolishing an established constitutional body", "The act of dismantling an ancient administrative code"] }
+    // ==========================================
+    // TIER 4: GRANDMASTER (5 Questions)
+    // ==========================================
+    {
+      word: "crepuscular", pos: "adjective", tier: "grandmaster", correct: 3,
+      options: [
+        "Pertaining to deep, subterranean caverns",
+        "Characterized by brittle, crystallized formations",
+        "Occurring exclusively during winter solstice",
+        "Resembling or relating to twilight; active at twilight"
+      ]
+    },
+    {
+      word: "supererogatory", pos: "adjective", tier: "grandmaster", correct: 0,
+      options: [
+        "Performed beyond the call of duty or requirement",
+        "Mandated by strict ecclesiastical convention",
+        "Obtained through fraudulent administrative loopholes",
+        "Excessively demanding on human physical stamina"
+      ]
+    },
+    {
+      word: "apocryphal", pos: "adjective", tier: "grandmaster", correct: 2,
+      options: [
+        "Accepted without question by scholarly consensus",
+        "Inscribed upon weathered megalithic monuments",
+        "Of doubtful authenticity, although widely circulated as true",
+        "Lost permanently during historical conflicts"
+      ]
+    },
+    {
+      word: "callipygian", pos: "adjective", tier: "grandmaster", correct: 1,
+      options: [
+        "Relating to ancient melodic harp compositions",
+        "Having well-shaped or attractive buttocks",
+        "Exhibiting symmetrical facial proportions in portraiture",
+        "Adorned with intricate gold leaf along the borders"
+      ]
+    },
+    {
+      word: "apotheosis", pos: "noun", tier: "grandmaster", correct: 0,
+      options: [
+        "The highest point in the development of something; culmination or deification",
+        "The complete collapse of a philosophical or cosmological doctrine",
+        "The formal excommunication of an author from literary societies",
+        "The cyclical recurrence of cosmic epochs throughout deep time"
+      ]
+    }
   ];
 
   let currentIndex = 0;
   let selectedOption = null;
   let computedVocabSize = 0;
+  let assignedRank = "";
   const userAnswers = [];
 
   function loadQuestion() {
@@ -248,7 +559,13 @@
     
     const q = QUESTION_BANK[currentIndex];
     userAnswers.push({
+      word: q.word,
+      pos: q.pos,
       tier: q.tier,
+      selected: selectedOption,
+      correct: q.correct,
+      selectedText: q.options[selectedOption],
+      correctText: q.options[q.correct],
       isCorrect: selectedOption === q.correct
     });
 
@@ -304,14 +621,43 @@
     computedVocabSize = Math.max(800, totalVocabulary);
     document.getElementById("final-vocab-count").innerText = `${computedVocabSize.toLocaleString()} words`;
 
-    let rank = "Basic Communicator";
-    if (computedVocabSize > 35000) rank = "Lexical Grandmaster (Top 1%)";
-    else if (computedVocabSize > 22000) rank = "Avid Reader / Academic (Top 10%)";
-    else if (computedVocabSize > 12000) rank = "Fluent Native / Professional";
-    else if (computedVocabSize > 5000) rank = "Intermediate Speaker";
+    // Linguistic rank classification
+    if (computedVocabSize > 35000) assignedRank = "Lexical Grandmaster";
+    else if (computedVocabSize > 22000) assignedRank = "Avid Reader / Academic";
+    else if (computedVocabSize > 12000) assignedRank = "Fluent Professional";
+    else if (computedVocabSize > 5000) assignedRank = "Intermediate Speaker";
+    else assignedRank = "Basic Communicator";
 
-    document.getElementById("final-rank").innerText = rank;
+    document.getElementById("final-rank").innerText = assignedRank;
+
+    renderReviewSection();
     fetchLeaderboard();
+  }
+
+  function renderReviewSection() {
+    const missed = userAnswers.filter(a => !a.isCorrect);
+    const container = document.getElementById("missed-container");
+    const countTag = document.getElementById("missed-count-tag");
+    container.innerHTML = "";
+
+    if (missed.length === 0) {
+      countTag.innerText = "35 / 35 Correct";
+      container.innerHTML = `<div class="perfect-banner">⭐ Flawless Assessment! You answered all 35 words correctly.</div>`;
+      return;
+    }
+
+    countTag.innerText = `${missed.length} words to review`;
+
+    container.innerHTML = missed.map(item => `
+      <div class="missed-card">
+        <div class="missed-header">
+          <span class="missed-word">${escapeHtml(item.word)} <span style="font-size: 0.85rem; color: var(--muted); font-weight: normal;">(${item.pos})</span></span>
+          <span class="missed-tier">${item.tier}</span>
+        </div>
+        <div class="answer-line wrong"><strong>✕ Your answer:</strong> ${escapeHtml(item.selectedText)}</div>
+        <div class="answer-line correct"><strong>✓ Correct meaning:</strong> ${escapeHtml(item.correctText)}</div>
+      </div>
+    `).join("");
   }
 
   function saveScore() {
@@ -319,7 +665,12 @@
     const name = nameInput.value.trim();
     if (!name) return alert("Please enter a name first!");
 
-    const record = { name: name, score: computedVocabSize, timestamp: Date.now() };
+    const record = {
+      name: name,
+      score: Number(computedVocabSize),
+      rank: assignedRank,
+      timestamp: Date.now()
+    };
 
     db.ref("leaderboard").push(record)
       .then(() => {
@@ -334,21 +685,35 @@
   function fetchLeaderboard() {
     const lbContainer = document.getElementById("leaderboard-container");
 
-    db.ref("leaderboard").orderByChild("score").limitToLast(15).on("value", snapshot => {
+    db.ref("leaderboard").on("value", snapshot => {
       const scores = [];
-      snapshot.forEach(child => scores.push(child.val()));
-      scores.sort((a, b) => b.score - a.score);
-      renderLeaderboardUI(scores);
+      snapshot.forEach(child => {
+        const item = child.val();
+        scores.push({
+          name: item.name || "Anonymous",
+          score: Number(item.score) || 0,
+          rank: item.rank || "Evaluated",
+          timestamp: item.timestamp || 0
+        });
+      });
+
+      // Strict descending numeric sort: Highest score first; if tied, earlier timestamp wins
+      scores.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timestamp - b.timestamp;
+      });
+
+      renderLeaderboardUI(scores.slice(0, 20));
     }, err => {
       console.error("Database read failed: ", err);
-      lbContainer.innerHTML = `<div class="lb-row" style="color: var(--muted);">Unable to load scores. Check database rules.</div>`;
+      lbContainer.innerHTML = `<div class="lb-row" style="color: var(--muted); grid-template-columns: 1fr;">Unable to load scoreboard. Check database rules.</div>`;
     });
   }
 
   function renderLeaderboardUI(scores) {
     const lbContainer = document.getElementById("leaderboard-container");
     if (!scores.length) {
-      lbContainer.innerHTML = `<div class="lb-row" style="color: var(--muted);">No scores recorded yet. Be the first!</div>`;
+      lbContainer.innerHTML = `<div class="lb-row" style="color: var(--muted); grid-template-columns: 1fr;">No scores recorded yet. Be the first!</div>`;
       return;
     }
 
@@ -356,13 +721,14 @@
       <div class="lb-row">
         <span class="lb-rank ${idx === 0 ? 'top-1' : ''}">#${idx + 1}</span>
         <span class="lb-name">${escapeHtml(item.name)}</span>
+        <span class="lb-tag">${escapeHtml(item.rank)}</span>
         <span class="lb-score">${item.score.toLocaleString()} words</span>
       </div>
     `).join("");
   }
 
   function escapeHtml(str) {
-    return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
+    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
   }
 
   function restartTest() {
