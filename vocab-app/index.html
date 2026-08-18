@@ -116,8 +116,8 @@
       <div class="progress-bar-fill" id="progress-bar"></div>
     </div>
 
-    <div class="word-title" id="word-target">ponder</div>
-    <div class="word-meta" id="word-type">verb</div>
+    <div class="word-title" id="word-target">Loading...</div>
+    <div class="word-meta" id="word-type">...</div>
 
     <div class="options-grid" id="options-container"></div>
     <button class="btn-action" id="next-btn" disabled onclick="handleNext()">Next Word</button>
@@ -176,362 +176,132 @@
   }
 
   const BAND_CONFIG = {
-    beginner: { label: "Beginner / Core (1 – 3,000 words)", size: 3000 },
-    intermediate: { label: "Intermediate (3,001 – 10,000 words)", size: 7000 },
-    advanced: { label: "Advanced (10,001 – 25,000 words)", size: 15000 },
-    grandmaster: { label: "Grandmaster (25,001 – 50,000+ words)", size: 25000 }
+    beginner: { label: "Beginner / Core (1 – 3,000 words)", size: 3000, sampleCount: 10 },
+    intermediate: { label: "Intermediate (3,001 – 10,000 words)", size: 7000, sampleCount: 10 },
+    advanced: { label: "Advanced (10,001 – 25,000 words)", size: 15000, sampleCount: 10 },
+    grandmaster: { label: "Grandmaster (25,001 – 50,000+ words)", size: 25000, sampleCount: 5 }
   };
 
-  const QUESTION_BANK = [
-    // ==========================================
-    // TIER 1: BEGINNER (10 Questions)
-    // ==========================================
-    {
-      word: "ponder", pos: "verb", tier: "beginner", correct: 2,
-      options: [
-        "To decide quickly under urgent pressure",
-        "To speak softly to avoid interruption",
-        "To think about something carefully and deeply",
-        "To organize facts into numerical order"
-      ]
-    },
-    {
-      word: "scarce", pos: "adjective", tier: "beginner", correct: 0,
-      options: [
-        "Insufficient for demand; rare and in short supply",
-        "Scattered unevenly over a large geographic territory",
-        "Diminished in quality due to prolonged physical wear",
-        "Confined strictly within established safety bounds"
-      ]
-    },
-    {
-      word: "linger", pos: "verb", tier: "beginner", correct: 3,
-      options: [
-        "To wander aimlessly through unfamiliar paths",
-        "To hesitate repeatedly during conversation",
-        "To move forward with measured steps",
-        "To stay in a place longer than necessary"
-      ]
-    },
-    {
-      word: "vivid", pos: "adjective", tier: "beginner", correct: 1,
-      options: [
-        "Expressed with rapid and forceful rhythm",
-        "Producing powerful, clear images in the mind",
-        "Displayed with elaborate and costly decoration",
-        "Changing continuously throughout the day"
-      ]
-    },
-    {
-      word: "hinder", pos: "verb", tier: "beginner", correct: 2,
-      options: [
-        "To reject a formal proposal entirely",
-        "To criticize someone's creative effort",
-        "To create difficulties resulting in delay or obstruction",
-        "To misinterpret the purpose of an assigned task"
-      ]
-    },
-    {
-      word: "somber", pos: "adjective", tier: "beginner", correct: 0,
-      options: [
-        "Oppressively solemn, grave, or gloomy in mood",
-        "Visibly fatigued after prolonged physical exertion",
-        "Excessively formal during informal social occasions",
-        "Cautiously quiet when approaching potential danger"
-      ]
-    },
-    {
-      word: "perceive", pos: "verb", tier: "beginner", correct: 1,
-      options: [
-        "To analyze data using mathematical models",
-        "To become aware or conscious of something through the senses",
-        "To convey ideas through written composition",
-        "To remember events that took place long ago"
-      ]
-    },
-    {
-      word: "blunt", pos: "adjective", tier: "beginner", correct: 3,
-      options: [
-        "Easily shattered under sudden heavy impact",
-        "Expressed in overly complex technical terms",
-        "Polite and indirect in addressing conflict",
-        "Uncompromisingly direct and forthright in speech"
-      ]
-    },
-    {
-      word: "remedy", pos: "noun", tier: "beginner", correct: 2,
-      options: [
-        "A formal inquiry into structural defects",
-        "A temporary reduction in ongoing expenses",
-        "A medicine or treatment for a disease or injury",
-        "A legal argument presented before a magistrate"
-      ]
-    },
-    {
-      word: "tedious", pos: "adjective", tier: "beginner", correct: 0,
-      options: [
-        "Too long, slow, or dull; tiresome or monotonous",
-        "Physically dangerous to carry out alone",
-        "Requiring advanced mathematical calculation",
-        "Composed of delicate and fragile materials"
-      ]
-    },
+  // Master bank containing multiple sets of words
+  const MASTER_POOL = {
+    beginner: [
+      { word: "ponder", pos: "verb", correctText: "To think about something carefully and deeply", distractors: ["To decide quickly under urgent pressure", "To speak softly to avoid interruption", "To organize facts into numerical order"] },
+      { word: "scarce", pos: "adjective", correctText: "Insufficient for demand; rare and in short supply", distractors: ["Scattered unevenly over a large geographic territory", "Diminished in quality due to prolonged physical wear", "Confined strictly within established safety bounds"] },
+      { word: "linger", pos: "verb", correctText: "To stay in a place longer than necessary", distractors: ["To wander aimlessly through unfamiliar paths", "To hesitate repeatedly during conversation", "To move forward with measured steps"] },
+      { word: "vivid", pos: "adjective", correctText: "Producing powerful, clear images in the mind", distractors: ["Expressed with rapid and forceful rhythm", "Displayed with elaborate and costly decoration", "Changing continuously throughout the day"] },
+      { word: "hinder", pos: "verb", correctText: "To create difficulties resulting in delay or obstruction", distractors: ["To reject a formal proposal entirely", "To criticize someone's creative effort", "To misinterpret the purpose of an assigned task"] },
+      { word: "somber", pos: "adjective", correctText: "Oppressively solemn, grave, or gloomy in mood", distractors: ["Visibly fatigued after prolonged physical exertion", "Excessively formal during informal social occasions", "Cautiously quiet when approaching potential danger"] },
+      { word: "perceive", pos: "verb", correctText: "To become aware or conscious of something through the senses", distractors: ["To analyze data using mathematical models", "To convey ideas through written composition", "To remember events that took place long ago"] },
+      { word: "blunt", pos: "adjective", correctText: "Uncompromisingly direct and forthright in speech", distractors: ["Easily shattered under sudden heavy impact", "Expressed in overly complex technical terms", "Polite and indirect in addressing conflict"] },
+      { word: "remedy", pos: "noun", correctText: "A medicine or treatment for a disease or injury", distractors: ["A formal inquiry into structural defects", "A temporary reduction in ongoing expenses", "A legal argument presented before a magistrate"] },
+      { word: "tedious", pos: "adjective", correctText: "Too long, slow, or dull; tiresome or monotonous", distractors: ["Physically dangerous to carry out alone", "Requiring advanced mathematical calculation", "Composed of delicate and fragile materials"] },
+      { word: "hesitate", pos: "verb", correctText: "To pause briefly before saying or doing something", distractors: ["To pause briefly due to physical exhaustion", "To pause briefly to observe distant scenery", "To pause briefly during formal speech delivery"] },
+      { word: "glance", pos: "verb", correctText: "To look quickly and briefly at something", distractors: ["To look intensely and steadily at something", "To look secretively through an opening", "To look angrily at an opposing person"] },
+      { word: "reluctant", pos: "adjective", correctText: "Feeling hesitant and unwilling to act", distractors: ["Feeling anxious about future uncertainty", "Feeling indifferent to outside advice", "Feeling unable to make logical sense"] },
+      { word: "abundant", pos: "adjective", correctText: "Existing in large, plentiful quantities", distractors: ["Existing in small, concentrated amounts", "Existing in rare, prized distributions", "Existing in dense, unorganized clumps"] },
+      { word: "fragile", pos: "adjective", correctText: "Easily broken, damaged, or harmed", distractors: ["Easily bent without losing shape", "Easily dissolved in cold liquids", "Easily hidden from plain view"] },
+      { word: "hostile", pos: "adjective", correctText: "Showing open, aggressive unfriendliness", distractors: ["Showing cold, detached disinterest", "Showing excessive, frantic nervousness", "Showing stubborn, quiet disagreement"] }
+    ],
+    intermediate: [
+      { word: "coerce", pos: "verb", correctText: "To persuade someone to act by using force or threats", distractors: ["To convince someone through rational debate", "To encourage someone by offering financial awards", "To trick someone through deliberate omission of facts"] },
+      { word: "frugal", pos: "adjective", correctText: "Economical with regard to money or food; sparing", distractors: ["Reluctant to share personal belongings with others", "Unwilling to invest in innovative technology", "Driven strictly by immediate emotional gratification"] },
+      { word: "advocate", pos: "verb", correctText: "To publicly recommend or support a particular cause", distractors: ["To objectively audit an organization's records", "To mediate disputes between competing factions", "To publish a critical review of a policy"] },
+      { word: "resilient", pos: "adjective", correctText: "Able to recover quickly from difficulties or setbacks", distractors: ["Incapable of sustaining any physical deformation", "Prone to bending without breaking permanently", "Unresponsive to outside emotional stimulation"] },
+      { word: "diverge", pos: "verb", correctText: "To separate from another route and go in a different direction", distractors: ["To gather together toward a central point", "To stop progressing along an established timeline", "To expand outward equally in all dimensions"] },
+      { word: "subtle", pos: "adjective", correctText: "So delicate or precise as to be difficult to analyze", distractors: ["Completely hidden from any scientific measurement", "Expressed through complex mathematical notation", "Deliberately misleading to obscure true motives"] },
+      { word: "repudiate", pos: "verb", correctText: "To refuse to accept or be associated with something", distractors: ["To critique a document for minor grammatical errors", "To postpone an official proceeding indefinitely", "To amend a contract to include updated stipulations"] },
+      { word: "pristine", pos: "adjective", correctText: "In its original condition; unspoiled or clean", distractors: ["Preserved inside a secure museum vault", "Constructed using highly modern engineering methods", "Refined through repeated industrial processing"] },
+      { word: "reconcile", pos: "verb", correctText: "To restore friendly relations between parties", distractors: ["To document discrepancies found in accounts", "To debate policy before a legislative panel", "To cancel opposing orders to prevent conflict"] },
+      { word: "ambiguous", pos: "adjective", correctText: "Open to more than one interpretation; unclear", distractors: ["Grammatically incorrect in formal writing", "Completely devoid of factual corroboration", "Intended solely to cause comedic confusion"] },
+      { word: "mitigate", pos: "verb", correctText: "To make a bad situation less severe or serious", distractors: ["To prevent a bad event from happening entirely", "To postpone a bad consequence until a later date", "To identify the underlying cause of a bad result"] },
+      { word: "pragmatic", pos: "adjective", correctText: "Guided primarily by practical considerations", distractors: ["Guided primarily by theoretical doctrine", "Guided primarily by emotional conviction", "Guided primarily by historical precedent"] },
+      { word: "scrutinize", pos: "verb", correctText: "To examine or inspect very closely and thoroughly", distractors: ["To critique or evaluate from an artistic perspective", "To summarize or condense for quick reading", "To verify or cross-check against an index"] },
+      { word: "ubiquitous", pos: "adjective", correctText: "Present, appearing, or found everywhere", distractors: ["Present only in specialized technical contexts", "Present in increasing quantities over time", "Present without drawing conscious notice"] }
+    ],
+    advanced: [
+      { word: "surreptitious", pos: "adjective", correctText: "Kept secret, especially because it would not be approved of", distractors: ["Marked by swift, continuous physical movement", "Operating with complete disregard for civilian law", "Displaying exceptional agility in athletic competition"] },
+      { word: "exacerbate", pos: "verb", correctText: "To make a problem, bad situation, or negative feeling worse", distractors: ["To eliminate the root symptoms of a disorder", "To delay resolution through bureaucratic procedures", "To misdiagnose the underlying cause of an affliction"] },
+      { word: "anachronistic", pos: "adjective", correctText: "Belonging to a period other than that in which it exists", distractors: ["Arranged in strict chronological sequence of events", "Recorded in ancient, untranslated scripts", "Destined to become obsolete in the near future"] },
+      { word: "capricious", pos: "adjective", correctText: "Given to sudden and unaccountable changes of mood or behavior", distractors: ["Steadfast and unchanging in moral dedication", "Excessively fearful of sudden environmental change", "Deliberately contrary solely for argumentative pleasure"] },
+      { word: "proclivity", pos: "noun", correctText: "A tendency to choose or do something regularly; an inclination", distractors: ["A formal decree issued by a high magistrate", "A sudden revulsion toward a previously favored hobby", "An inherited talent for memorizing complex narratives"] },
+      { word: "trenchant", pos: "adjective", correctText: "Vigorous or incisive in expression or style", distractors: ["Monotonous and repetitive in public delivery", "Subtle and elusive in conveying meaning", "Overly cautious when addressing sensitive topics"] },
+      { word: "taciturn", pos: "adjective", correctText: "Reserved or uncommunicative in speech; saying little", distractors: ["Prone to making aggressive rhetorical claims", "Articulate and persuasive in diplomatic circles", "Hesitant when asked to present before a crowd"] },
+      { word: "vicissitude", pos: "noun", correctText: "A change of circumstances or fortune, typically unwelcome", distractors: ["A persistent moral corruption within institutions", "A permanent alteration of geological landscape", "An enduring devotion to an artistic discipline"] },
+      { word: "quandary", pos: "noun", correctText: "A state of perplexity or uncertainty over what to do in a difficult situation", distractors: ["A heated confrontation regarding contested territorial boundaries", "A prolonged delay caused by contradictory administrative codes", "A complete failure to anticipate catastrophic economic loss"] },
+      { word: "sagacious", pos: "adjective", correctText: "Having or showing keen mental discernment and good judgment", distractors: ["Possessing encyclopedic knowledge of ancient myth", "Maintaining rigid adherence to established doctrine", "Demonstrating remarkable physical dexterity under pressure"] },
+      { word: "ephemeral", pos: "adjective", correctText: "Lasting for a very short period of time", distractors: ["Physically fragile and prone to crumbling", "Visually faint and difficult to perceive", "Existing only in subjective imagination"] },
+      { word: "obfuscate", pos: "verb", correctText: "To make something obscure, unclear, or unintelligible", distractors: ["To fabricate facts to mislead an audience", "To omit critical context to simplify a summary", "To delay delivering an official public statement"] },
+      { word: "sycophant", pos: "noun", correctText: "A person who acts obsequiously to gain advantage", distractors: ["A person who attacks cherished traditional beliefs", "A person who displays arrogant intellectual pride", "A person who deceives others for monetary profit"] },
+      { word: "recalcitrant", pos: "adjective", correctText: "Obstinately uncooperative toward authority", distractors: ["Reluctant to participate due to lack of skill", "Prone to sudden changes of mood or intention", "Unwilling to communicate with unfamiliar peers"] }
+    ],
+    grandmaster: [
+      { word: "crepuscular", pos: "adjective", correctText: "Resembling or relating to twilight; active at twilight", distractors: ["Pertaining to deep, subterranean caverns", "Characterized by brittle, crystallized formations", "Occurring exclusively during winter solstice"] },
+      { word: "supererogatory", pos: "adjective", correctText: "Performed beyond the call of duty or requirement", distractors: ["Mandated by strict ecclesiastical convention", "Obtained through fraudulent administrative loopholes", "Excessively demanding on human physical stamina"] },
+      { word: "apocryphal", pos: "adjective", correctText: "Of doubtful authenticity, although widely circulated as true", distractors: ["Accepted without question by scholarly consensus", "Inscribed upon weathered megalithic monuments", "Lost permanently during historical conflicts"] },
+      { word: "callipygian", pos: "adjective", correctText: "Having well-shaped or attractive buttocks", distractors: ["Relating to ancient melodic harp compositions", "Exhibiting symmetrical facial proportions in portraiture", "Adorned with intricate gold leaf along the borders"] },
+      { word: "apotheosis", pos: "noun", correctText: "The highest point in the development of something; culmination or deification", distractors: ["The complete collapse of a philosophical or cosmological doctrine", "The formal excommunication of an author from literary societies", "The cyclical recurrence of cosmic epochs throughout deep time"] },
+      { word: "perspicacity", pos: "noun", correctText: "The quality of having keen mental discernment and insight", distractors: ["The ability to articulate concepts with fluid eloquence", "The capacity to retain extensive factual information", "The tendency to maintain resolute focus under distress"] },
+      { word: "sesquipedalian", pos: "adjective", correctText: "Characterized by the use of long words", distractors: ["Characterized by antique grammatical structures", "Characterized by excessively ornate rhetorical style", "Characterized by slow and ponderous delivery"] },
+      { word: "defenestration", pos: "noun", correctText: "The act of throwing someone or something out of a window", distractors: ["The act of formally stripping an official of their title", "The act of abolishing an established constitutional body", "The act of dismantling an ancient administrative code"] }
+    ]
+  };
 
-    // ==========================================
-    // TIER 2: INTERMEDIATE (10 Questions)
-    // ==========================================
-    {
-      word: "coerce", pos: "verb", tier: "intermediate", correct: 1,
-      options: [
-        "To convince someone through rational debate",
-        "To persuade someone to act by using force or threats",
-        "To encourage someone by offering financial awards",
-        "To trick someone through deliberate omission of facts"
-      ]
-    },
-    {
-      word: "frugal", pos: "adjective", tier: "intermediate", correct: 3,
-      options: [
-        "Reluctant to share personal belongings with others",
-        "Unwilling to invest in innovative technology",
-        "Driven strictly by immediate emotional gratification",
-        "Economical with regard to money or food; sparing"
-      ]
-    },
-    {
-      word: "advocate", pos: "verb", tier: "intermediate", correct: 0,
-      options: [
-        "To publicly recommend or support a particular cause",
-        "To objectively audit an organization's records",
-        "To mediate disputes between competing factions",
-        "To publish a critical review of a policy"
-      ]
-    },
-    {
-      word: "resilient", pos: "adjective", tier: "intermediate", correct: 2,
-      options: [
-        "Incapable of sustaining any physical deformation",
-        "Prone to bending without breaking permanently",
-        "Able to recover quickly from difficulties or setbacks",
-        "Unresponsive to outside emotional stimulation"
-      ]
-    },
-    {
-      word: "diverge", pos: "verb", tier: "intermediate", correct: 1,
-      options: [
-        "To gather together toward a central point",
-        "To separate from another route and go in a different direction",
-        "To stop progressing along an established timeline",
-        "To expand outward equally in all dimensions"
-      ]
-    },
-    {
-      word: "subtle", pos: "adjective", tier: "intermediate", correct: 0,
-      options: [
-        "So delicate or precise as to be difficult to analyze",
-        "Completely hidden from any scientific measurement",
-        "Expressed through complex mathematical notation",
-        "Deliberately misleading to obscure true motives"
-      ]
-    },
-    {
-      word: "repudiate", pos: "verb", tier: "intermediate", correct: 3,
-      options: [
-        "To critique a document for minor grammatical errors",
-        "To postpone an official proceeding indefinitely",
-        "To amend a contract to include updated stipulations",
-        "To refuse to accept or be associated with something"
-      ]
-    },
-    {
-      word: "pristine", pos: "adjective", tier: "intermediate", correct: 2,
-      options: [
-        "Preserved inside a secure museum vault",
-        "Constructed using highly modern engineering methods",
-        "In its original condition; unspoiled or clean",
-        "Refined through repeated industrial processing"
-      ]
-    },
-    {
-      word: "reconcile", pos: "verb", tier: "intermediate", correct: 0,
-      options: [
-        "To restore friendly relations between parties",
-        "To document discrepancies found in accounts",
-        "To debate policy before a legislative panel",
-        "To cancel opposing orders to prevent conflict"
-      ]
-    },
-    {
-      word: "ambiguous", pos: "adjective", tier: "intermediate", correct: 1,
-      options: [
-        "Grammatically incorrect in formal writing",
-        "Open to more than one interpretation; unclear",
-        "Completely devoid of factual corroboration",
-        "Intended solely to cause comedic confusion"
-      ]
-    },
-
-    // ==========================================
-    // TIER 3: ADVANCED (10 Questions)
-    // ==========================================
-    {
-      word: "surreptitious", pos: "adjective", tier: "advanced", correct: 3,
-      options: [
-        "Marked by swift, continuous physical movement",
-        "Operating with complete disregard for civilian law",
-        "Displaying exceptional agility in athletic competition",
-        "Kept secret, especially because it would not be approved of"
-      ]
-    },
-    {
-      word: "exacerbate", pos: "verb", tier: "advanced", correct: 1,
-      options: [
-        "To eliminate the root symptoms of a disorder",
-        "To make a problem, bad situation, or negative feeling worse",
-        "To delay resolution through bureaucratic procedures",
-        "To misdiagnose the underlying cause of an affliction"
-      ]
-    },
-    {
-      word: "anachronistic", pos: "adjective", tier: "advanced", correct: 0,
-      options: [
-        "Belonging to a period other than that in which it exists",
-        "Arranged in strict chronological sequence of events",
-        "Recorded in ancient, untranslated scripts",
-        "Destined to become obsolete in the near future"
-      ]
-    },
-    {
-      word: "capricious", pos: "adjective", tier: "advanced", correct: 2,
-      options: [
-        "Steadfast and unchanging in moral dedication",
-        "Excessively fearful of sudden environmental change",
-        "Given to sudden and unaccountable changes of mood or behavior",
-        "Deliberately contrary solely for argumentative pleasure"
-      ]
-    },
-    {
-      word: "proclivity", pos: "noun", tier: "advanced", correct: 1,
-      options: [
-        "A formal decree issued by a high magistrate",
-        "A tendency to choose or do something regularly; an inclination",
-        "A sudden revulsion toward a previously favored hobby",
-        "An inherited talent for memorizing complex narratives"
-      ]
-    },
-    {
-      word: "trenchant", pos: "adjective", tier: "advanced", correct: 0,
-      options: [
-        "Vigorous or incisive in expression or style",
-        "Monotonous and repetitive in public delivery",
-        "Subtle and elusive in conveying meaning",
-        "Overly cautious when addressing sensitive topics"
-      ]
-    },
-    {
-      word: "taciturn", pos: "adjective", tier: "advanced", correct: 3,
-      options: [
-        "Prone to making aggressive rhetorical claims",
-        "Articulate and persuasive in diplomatic circles",
-        "Hesitant when asked to present before a crowd",
-        "Reserved or uncommunicative in speech; saying little"
-      ]
-    },
-    {
-      word: "vicissitude", pos: "noun", tier: "advanced", correct: 2,
-      options: [
-        "A persistent moral corruption within institutions",
-        "A permanent alteration of geological landscape",
-        "A change of circumstances or fortune, typically unwelcome",
-        "An enduring devotion to an artistic discipline"
-      ]
-    },
-    {
-      word: "quandary", pos: "noun", tier: "advanced", correct: 0,
-      options: [
-        "A state of perplexity or uncertainty over what to do in a difficult situation",
-        "A heated confrontation regarding contested territorial boundaries",
-        "A prolonged delay caused by contradictory administrative codes",
-        "A complete failure to anticipate catastrophic economic loss"
-      ]
-    },
-    {
-      word: "sagacious", pos: "adjective", tier: "advanced", correct: 1,
-      options: [
-        "Possessing encyclopedic knowledge of ancient myth",
-        "Having or showing keen mental discernment and good judgment",
-        "Maintaining rigid adherence to established doctrine",
-        "Demonstrating remarkable physical dexterity under pressure"
-      ]
-    },
-
-    // ==========================================
-    // TIER 4: GRANDMASTER (5 Questions)
-    // ==========================================
-    {
-      word: "crepuscular", pos: "adjective", tier: "grandmaster", correct: 3,
-      options: [
-        "Pertaining to deep, subterranean caverns",
-        "Characterized by brittle, crystallized formations",
-        "Occurring exclusively during winter solstice",
-        "Resembling or relating to twilight; active at twilight"
-      ]
-    },
-    {
-      word: "supererogatory", pos: "adjective", tier: "grandmaster", correct: 0,
-      options: [
-        "Performed beyond the call of duty or requirement",
-        "Mandated by strict ecclesiastical convention",
-        "Obtained through fraudulent administrative loopholes",
-        "Excessively demanding on human physical stamina"
-      ]
-    },
-    {
-      word: "apocryphal", pos: "adjective", tier: "grandmaster", correct: 2,
-      options: [
-        "Accepted without question by scholarly consensus",
-        "Inscribed upon weathered megalithic monuments",
-        "Of doubtful authenticity, although widely circulated as true",
-        "Lost permanently during historical conflicts"
-      ]
-    },
-    {
-      word: "callipygian", pos: "adjective", tier: "grandmaster", correct: 1,
-      options: [
-        "Relating to ancient melodic harp compositions",
-        "Having well-shaped or attractive buttocks",
-        "Exhibiting symmetrical facial proportions in portraiture",
-        "Adorned with intricate gold leaf along the borders"
-      ]
-    },
-    {
-      word: "apotheosis", pos: "noun", tier: "grandmaster", correct: 0,
-      options: [
-        "The highest point in the development of something; culmination or deification",
-        "The complete collapse of a philosophical or cosmological doctrine",
-        "The formal excommunication of an author from literary societies",
-        "The cyclical recurrence of cosmic epochs throughout deep time"
-      ]
+  // Utility to shuffle arrays
+  function shuffleArray(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
     }
-  ];
+    return copy;
+  }
 
+  let sessionQuestions = [];
   let currentIndex = 0;
   let selectedOption = null;
   let computedVocabSize = 0;
   let assignedRank = "";
   const userAnswers = [];
 
+  // Build a fresh test session
+  function buildSession() {
+    sessionQuestions = [];
+    userAnswers.length = 0;
+    currentIndex = 0;
+
+    for (const tier of ["beginner", "intermediate", "advanced", "grandmaster"]) {
+      const config = BAND_CONFIG[tier];
+      const shuffledTierWords = shuffleArray(MASTER_POOL[tier]);
+      const sampled = shuffledTierWords.slice(0, config.sampleCount);
+
+      sampled.forEach(item => {
+        const allOptions = [item.correctText, ...item.distractors];
+        const shuffledOptions = shuffleArray(allOptions);
+        const correctIndex = shuffledOptions.indexOf(item.correctText);
+
+        sessionQuestions.push({
+          word: item.word,
+          pos: item.pos,
+          tier: tier,
+          correct: correctIndex,
+          correctText: item.correctText,
+          options: shuffledOptions
+        });
+      });
+    }
+  }
+
   function loadQuestion() {
     selectedOption = null;
-    const q = QUESTION_BANK[currentIndex];
+    const q = sessionQuestions[currentIndex];
     
     document.getElementById("tier-indicator").innerText = q.tier;
-    document.getElementById("progress-text").innerText = `Question ${currentIndex + 1} of ${QUESTION_BANK.length}`;
-    document.getElementById("progress-bar").style.width = `${((currentIndex) / QUESTION_BANK.length) * 100}%`;
+    document.getElementById("progress-text").innerText = `Question ${currentIndex + 1} of ${sessionQuestions.length}`;
+    document.getElementById("progress-bar").style.width = `${((currentIndex) / sessionQuestions.length) * 100}%`;
     document.getElementById("word-target").innerText = q.word;
     document.getElementById("word-type").innerText = q.pos;
     document.getElementById("next-btn").disabled = true;
-    document.getElementById("next-btn").innerText = (currentIndex === QUESTION_BANK.length - 1) ? "Calculate Vocabulary Size" : "Next Word";
+    document.getElementById("next-btn").innerText = (currentIndex === sessionQuestions.length - 1) ? "Calculate Vocabulary Size" : "Next Word";
 
     const container = document.getElementById("options-container");
     container.innerHTML = "";
@@ -557,7 +327,7 @@
   function handleNext() {
     if (selectedOption === null) return;
     
-    const q = QUESTION_BANK[currentIndex];
+    const q = sessionQuestions[currentIndex];
     userAnswers.push({
       word: q.word,
       pos: q.pos,
@@ -565,12 +335,12 @@
       selected: selectedOption,
       correct: q.correct,
       selectedText: q.options[selectedOption],
-      correctText: q.options[q.correct],
+      correctText: q.correctText,
       isCorrect: selectedOption === q.correct
     });
 
     currentIndex++;
-    if (currentIndex < QUESTION_BANK.length) {
+    if (currentIndex < sessionQuestions.length) {
       loadQuestion();
     } else {
       renderResults();
@@ -621,7 +391,6 @@
     computedVocabSize = Math.max(800, totalVocabulary);
     document.getElementById("final-vocab-count").innerText = `${computedVocabSize.toLocaleString()} words`;
 
-    // Linguistic rank classification
     if (computedVocabSize > 35000) assignedRank = "Lexical Grandmaster";
     else if (computedVocabSize > 22000) assignedRank = "Avid Reader / Academic";
     else if (computedVocabSize > 12000) assignedRank = "Fluent Professional";
@@ -697,7 +466,6 @@
         });
       });
 
-      // Strict descending numeric sort: Highest score first; if tied, earlier timestamp wins
       scores.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return a.timestamp - b.timestamp;
@@ -732,15 +500,16 @@
   }
 
   function restartTest() {
-    currentIndex = 0;
-    userAnswers.length = 0;
     document.getElementById("submit-box").style.display = "flex";
     document.getElementById("player-name").value = "";
     document.getElementById("result-screen").style.display = "none";
     document.getElementById("quiz-screen").style.display = "block";
+    buildSession();
     loadQuestion();
   }
 
+  // Initial startup
+  buildSession();
   loadQuestion();
 </script>
 </body>
